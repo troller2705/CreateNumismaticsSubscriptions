@@ -81,5 +81,10 @@
       <option name="name" value="MavenRepo" />
       <option name="url" value="https://repo.maven.apache.org/maven2/" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven11" />
+      <option name="name" value="maven11" />
+      <option name="url" value="https://maven.ithundxr.dev" />
+    </remote-repository>
   </component>
 </project>

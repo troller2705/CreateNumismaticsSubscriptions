@@ -16,75 +16,74 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.troller2705.createnumismaticssubs.content.depositor;
+package com.troller2705.createnumismaticssubs.content.subscription_depositor;
 
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-import dev.ithundxr.createnumismatics.content.backend.ReasonHolder;
 import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceBehaviour;
+import dev.ithundxr.createnumismatics.content.depositor.AbstractDepositorBlock;
 import dev.ithundxr.createnumismatics.registry.NumismaticsBlockEntities;
 import dev.ithundxr.createnumismatics.util.Utils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
-import dev.ithundxr.createnumismatics.content.depositor;
 
-public class BrassDepositorBlock extends AbstractDepositorBlock<BrassDepositorBlockEntity> {
-    public BrassDepositorBlock(Properties properties) {
+public class SubscriptionDepositorBlock extends AbstractDepositorBlock<SubscriptionDepositorBlockEntity>
+{
+    public SubscriptionDepositorBlock(Properties properties) {
         super(properties);
     }
 
     @Override
-    public Class<BrassDepositorBlockEntity> getBlockEntityClass() {
-        return BrassDepositorBlockEntity.class;
+    public Class<SubscriptionDepositorBlockEntity> getBlockEntityClass() {
+        return SubscriptionDepositorBlockEntity.class;
     }
 
     @Override
-    public BlockEntityType<BrassDepositorBlockEntity> getBlockEntityType() {
+    public BlockEntityType<SubscriptionDepositorBlockEntity> getBlockEntityType() {
         return NumismaticsBlockEntities.BRASS_DEPOSITOR.get();
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public @NotNull InteractionResult use(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos,
-                                          @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
-
-        if (hit.getDirection().getAxis().isVertical()) {
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (hitResult.getDirection().getAxis().isVertical()) {
             if (level.isClientSide)
-                return InteractionResult.SUCCESS;
+                return ItemInteractionResult.SUCCESS;
             if (isTrusted(player, level, pos)) {
                 withBlockEntityDo(level, pos,
-                    be -> Utils.openScreen((ServerPlayer) player, be, be::sendToMenu));
+                        be -> Utils.openScreen((ServerPlayer) player, be, be::sendToMenu));
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
 
-        if (state.getValue(HORIZONTAL_FACING) != hit.getDirection())
-            return InteractionResult.PASS;
+        if (state.getValue(HORIZONTAL_FACING) != hitResult.getDirection())
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (state.getValue(POWERED) || state.getValue(LOCKED))
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.FAIL;
 
         if (level.isClientSide)
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
 
-        ReasonHolder reasonHolder = new ReasonHolder();
         SliderStylePriceBehaviour priceBehaviour = BlockEntityBehaviour.get(level, pos, SliderStylePriceBehaviour.TYPE);
-        if (priceBehaviour != null && priceBehaviour.deduct(player, hand, true, reasonHolder)) {
+        if (priceBehaviour != null && priceBehaviour.deduct(player, hand, true)) {
             activate(state, level, pos);
         } else {
-            player.displayClientMessage(reasonHolder.getMessageOrDefault()
+            player.displayClientMessage(Component.translatable("gui.numismatics.vendor.insufficient_funds")
                     .withStyle(ChatFormatting.DARK_RED), true);
             level.playSound(null, pos, AllSoundEvents.DENY.getMainEvent(), SoundSource.BLOCKS, 0.5f, 1.0f);}
-        return InteractionResult.CONSUME;
+        return ItemInteractionResult.CONSUME;
     }
 }

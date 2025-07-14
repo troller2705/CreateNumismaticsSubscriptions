@@ -16,17 +16,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.ithundxr.createnumismatics.content.depositor;
+package com.troller2705.createnumismaticssubs.content.subscription_depositor;
 
 import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import dev.ithundxr.createnumismatics.Numismatics;
-import dev.ithundxr.createnumismatics.compat.computercraft.ComputerCraftProxy;
-import dev.ithundxr.createnumismatics.config.NumismaticsConfig;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceBehaviour;
 import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListMenu;
 import dev.ithundxr.createnumismatics.content.coins.MergingCoinBag;
+import dev.ithundxr.createnumismatics.content.depositor.AbstractDepositorBlockEntity;
 import dev.ithundxr.createnumismatics.registry.NumismaticsBlocks;
 import dev.ithundxr.createnumismatics.registry.NumismaticsMenuTypes;
 import dev.ithundxr.createnumismatics.util.TextUtils;
@@ -47,21 +46,20 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class BrassDepositorBlockEntity extends AbstractDepositorBlockEntity implements MenuProvider {
+public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEntity implements MenuProvider {
 
     private SliderStylePriceBehaviour price;
-    public AbstractComputerBehaviour computerBehaviour;
 
-    public BrassDepositorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+    public SubscriptionDepositorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
     @Override
-    public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        price = new SliderStylePriceBehaviour(this, this::addCoin, this::getCoinCount);
-        behaviours.add(computerBehaviour = ComputerCraftProxy.behaviour(this));
-        behaviours.add(price);
+    public void addBehaviours(List<BlockEntityBehaviour> behaviours)
+    {
+
     }
+
 
     public int getCoinCount(Coin coin) {
         return this.inventory.getDiscrete(coin);
@@ -77,7 +75,7 @@ public class BrassDepositorBlockEntity extends AbstractDepositorBlockEntity impl
     public AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player) {
         if (!isTrusted(player))
             return null;
-        return new BrassDepositorMenu(NumismaticsMenuTypes.BRASS_DEPOSITOR.get(), i, inventory, this);
+        return new SubscriptionDepositorMenu(NumismaticsMenuTypes.BRASS_DEPOSITOR.get(), i, inventory, this);
     }
 
     public int getTotalPrice() {
@@ -90,10 +88,6 @@ public class BrassDepositorBlockEntity extends AbstractDepositorBlockEntity impl
 
     public void setPrice(Coin coin, int price) {
         this.price.setPrice(coin, price);
-    }
-
-    public void disableClientPriceRead() {
-        price.disableClientRead();
     }
 
     public void addCoins(int totalPrice) {
@@ -111,19 +105,19 @@ public class BrassDepositorBlockEntity extends AbstractDepositorBlockEntity impl
 
     @Override
     public boolean addToTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        Couple<Integer> referenceAndSpurs = NumismaticsConfig.common().referenceCoin.get().convert(price.getTotalPrice());
-        int cogs = referenceAndSpurs.getFirst();
-        int spurs = referenceAndSpurs.getSecond();
+        Couple<Integer> cogsAndSpurs = Coin.COG.convert(price.getTotalPrice());
+        int cogs = cogsAndSpurs.getFirst();
+        int spurs = cogsAndSpurs.getSecond();
         MutableComponent balanceLabel = Component.translatable("block.numismatics.brass_depositor.tooltip.price",
-            TextUtils.formatInt(cogs), NumismaticsConfig.common().referenceCoin.get().getName(cogs), spurs);
-        Lang.builder(Numismatics.MODID)
-                        .add(balanceLabel.withStyle(Coin.closest(price.getTotalPrice()).rarity.color()))
-                        .forGoggles(tooltip);
+                TextUtils.formatInt(cogs), Coin.COG.getName(cogs), spurs);
+        Lang.builder(Numismatics.MOD_ID)
+                .add(balanceLabel.withStyle(Coin.closest(price.getTotalPrice()).rarity.color()))
+                .forGoggles(tooltip);
 
         for (MutableComponent component : price.getCondensedPriceBreakdown()) {
-            Lang.builder(Numismatics.MODID)
-                .add(component)
-                .forGoggles(tooltip);
+            Lang.builder(Numismatics.MOD_ID)
+                    .add(component)
+                    .forGoggles(tooltip);
         }
         return true;
     }
