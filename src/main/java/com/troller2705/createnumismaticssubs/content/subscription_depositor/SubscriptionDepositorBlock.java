@@ -20,6 +20,7 @@ package com.troller2705.createnumismaticssubs.content.subscription_depositor;
 
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.troller2705.createnumismaticssubs.AllBlockEntities;
 import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceBehaviour;
 import dev.ithundxr.createnumismatics.content.depositor.AbstractDepositorBlock;
 import dev.ithundxr.createnumismatics.registry.NumismaticsBlockEntities;
@@ -53,7 +54,7 @@ public class SubscriptionDepositorBlock extends AbstractDepositorBlock<Subscript
 
     @Override
     public BlockEntityType<SubscriptionDepositorBlockEntity> getBlockEntityType() {
-        return NumismaticsBlockEntities.BRASS_DEPOSITOR.get();
+        return AllBlockEntities.SUBSCRIPTION_DEPOSITOR.get();
     }
 
     @Override

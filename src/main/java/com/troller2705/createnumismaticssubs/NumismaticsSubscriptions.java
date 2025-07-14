@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 
 @Mod(NumismaticsSubscriptions.MODID)
 public class NumismaticsSubscriptions {
-    public static String MODID = "numismatics_subscriptions";
+    public static final String MODID = "numismatics_subscriptions";
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
@@ -47,7 +47,9 @@ public class NumismaticsSubscriptions {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
 
-        LOGGER.info("Registering create_colored blocks!");
+        AllBlocks.initialize();
+        AllBlockEntities.initialize();
+        AllCreativeTabs.initialize();
 
     }
 }
