@@ -55,9 +55,12 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
     }
 
     @Override
-    public void addBehaviours(List<BlockEntityBehaviour> behaviours)
-    {
+    public void addBehaviours(@NotNull List<BlockEntityBehaviour> behaviours) {
+        registerBehaviours(behaviours);
+    }
 
+    protected void registerBehaviours(@NotNull List<BlockEntityBehaviour> behaviours) {
+        // Your actual behaviours registration
     }
 
 
