@@ -29,6 +29,7 @@ repositories {
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" } // Forge Config API Port
     maven { url = "https://maven.jamieswhiteshirt.com/libs-release" } // Reach Entity Attributes
     maven { url = "https://maven.createmod.net" } // Create, Ponder, Flywheel
+    maven {url = "https://maven.ithundxr.dev" } // Create: Numismatics
     mavenCentral()
 }
 
@@ -126,6 +127,7 @@ dependencies {
     implementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
     implementation("net.createmod.ponder:Ponder-NeoForge-${minecraft_version}:${ponder_version}")
     implementation("com.tterrag.registrate:Registrate:${registrate_version}")
+    implementation "dev.ithundxr.createnumismatics:CreateNumismatics-neoforge-${minecraft_version}:${numismatics_version}"
     compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
     runtimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
 }
