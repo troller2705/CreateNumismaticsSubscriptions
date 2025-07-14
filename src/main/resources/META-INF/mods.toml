@@ -1,0 +1,12 @@
+modLoader="javafml"
+loaderVersion="[2,)"
+license="MIT"
+
+[[mods]]
+modId="createnumismatics"
+version="${file.jarVersion}"
+displayName="Create: Numismatics"
+authors="Original Authors"
+description='''
+A NeoForge port of the Create: Numismatics mod.
+'''
