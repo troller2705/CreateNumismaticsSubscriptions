@@ -7,15 +7,15 @@ forgedatadev
 --assetIndex
 17
 --assetsDir
-C:\\Users\\Cole\\.gradle\\caches\\neoformruntime\\assets
+C:\\Users\\nlees\\.gradle\\caches\\neoformruntime\\assets
 --gameDir
 .
 --fml.fmlVersion
-4.0.39
+4.0.41
 --fml.mcVersion
 1.21.1
 --fml.neoForgeVersion
-21.1.169
+21.1.187
 --fml.neoFormVersion
 20240808.144430
 
@@ -24,6 +24,6 @@ C:\\Users\\Cole\\.gradle\\caches\\neoformruntime\\assets
 numismaticssubs
 --all
 --output
-"D:\\MC Mods Custom\\CreateNumismaticsSubscriptions\\src\\generated\\resources"
+G:\\Programming\\CreateNumismaticsSubscriptions\\src\\generated\\resources
 --existing
-"D:\\MC Mods Custom\\CreateNumismaticsSubscriptions\\src\\main\\resources"
+G:\\Programming\\CreateNumismaticsSubscriptions\\src\\main\\resources

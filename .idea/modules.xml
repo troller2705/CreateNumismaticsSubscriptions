@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/CreateNumismaticsSubscriptions.main.iml" filepath="$PROJECT_DIR$/.idea/modules/CreateNumismaticsSubscriptions.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/CreateNumismaticsSubscriptions.test.iml" filepath="$PROJECT_DIR$/.idea/modules/CreateNumismaticsSubscriptions.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.troller2705.createnumismaticssubs.CreateNumismaticsSubscriptions.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.troller2705.createnumismaticssubs.CreateNumismaticsSubscriptions.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.troller2705.createnumismaticssubs.CreateNumismaticsSubscriptions.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.troller2705.createnumismaticssubs.CreateNumismaticsSubscriptions.test.iml" />
     </modules>
   </component>
 </project>
