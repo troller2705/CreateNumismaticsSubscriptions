@@ -20,14 +20,11 @@ package com.troller2705.numismatics_subscriptions.content.subscription_depositor
 
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.troller2705.numismatics_subscriptions.AllMenuTypes;
-import dev.ithundxr.createnumismatics.Numismatics;
+import com.troller2705.numismatics_subscriptions.NumismaticsSubscriptions;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceBehaviour;
-import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListMenu;
 import dev.ithundxr.createnumismatics.content.coins.MergingCoinBag;
 import dev.ithundxr.createnumismatics.content.depositor.AbstractDepositorBlockEntity;
-import dev.ithundxr.createnumismatics.registry.NumismaticsBlocks;
-import dev.ithundxr.createnumismatics.registry.NumismaticsMenuTypes;
 import dev.ithundxr.createnumismatics.util.TextUtils;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.lang.Lang;
@@ -107,14 +104,14 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
         Couple<Integer> cogsAndSpurs = Coin.COG.convert(price.getTotalPrice());
         int cogs = cogsAndSpurs.getFirst();
         int spurs = cogsAndSpurs.getSecond();
-        MutableComponent balanceLabel = Component.translatable("block.numismatics.brass_depositor.tooltip.price",
+        MutableComponent balanceLabel = Component.translatable("block.numismatics_subscriptions.subscription_depositor.tooltip.price",
                 TextUtils.formatInt(cogs), Coin.COG.getName(cogs), spurs);
-        Lang.builder(Numismatics.MOD_ID)
+        Lang.builder(NumismaticsSubscriptions.MODID)
                 .add(balanceLabel.withStyle(Coin.closest(price.getTotalPrice()).rarity.color()))
                 .forGoggles(tooltip);
 
         for (MutableComponent component : price.getCondensedPriceBreakdown()) {
-            Lang.builder(Numismatics.MOD_ID)
+            Lang.builder(NumismaticsSubscriptions.MODID)
                     .add(component)
                     .forGoggles(tooltip);
         }
