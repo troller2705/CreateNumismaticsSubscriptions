@@ -7,6 +7,7 @@ import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.Label;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
+import com.troller2705.numismatics_subscriptions.AllBlocks;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceConfigurationPacket;
 import dev.ithundxr.createnumismatics.registry.NumismaticsBlocks;
@@ -28,7 +29,7 @@ import java.util.List;
 
 public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<SubscriptionManagerMenu> {
     private final NumismaticsGuiTextures background = NumismaticsGuiTextures.BRASS_DEPOSITOR;
-    private final ItemStack renderedItem = NumismaticsBlocks.BRASS_DEPOSITOR.asStack();
+    private final ItemStack renderedItem = AllBlocks.SUBSCRIPTION_MANAGER.asStack();
 
     private final int COIN_COUNT = Coin.values().length;
 

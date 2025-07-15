@@ -46,14 +46,15 @@ public class SubscriptionManagerMenu extends MenuBase<SubscriptionManagerBlockEn
     }
 
     @Override
-    protected void initAndReadInventory(SubscriptionManagerBlockEntity contentHolder) {}
+    protected void initAndReadInventory(SubscriptionManagerBlockEntity contentHolder) {
+    }
 
     @Override
     protected void addSlots() {
         int x = 11+26;
         int y = 122;
 
-        addSlot(new CardSlot.BoundCardSlot(contentHolder.cardContainer, 0, 11+26, y)); // make here to preserve slot order
+//        addSlot(new CardSlot.BoundCardSlot(contentHolder.cardContainer, 0, 11+26, y)); // make here to preserve slot order
 
         addPlayerSlots(31+13, 165);
     }

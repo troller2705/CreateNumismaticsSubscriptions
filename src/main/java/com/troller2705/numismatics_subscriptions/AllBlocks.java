@@ -4,11 +4,13 @@ import com.simibubi.create.AllTags;
 import com.troller2705.numismatics_subscriptions.content.subscription_depositor.SubscriptionDepositorBlock;
 import com.troller2705.numismatics_subscriptions.content.subscription_manager.SubscriptionManagerBlock;
 import com.tterrag.registrate.util.entry.BlockEntry;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
 
 import static com.simibubi.create.foundation.data.TagGen.axeOrPickaxe;
 
+@SuppressWarnings({"deprecation", "removal"})
 public class AllBlocks {
 
     public static final BlockEntry<SubscriptionDepositorBlock> SUBSCRIPTION_DEPOSITOR = NumismaticsSubscriptions.REGISTRATE.block("subscription_depositor", SubscriptionDepositorBlock::new)
@@ -22,6 +24,7 @@ public class AllBlocks {
             )
             .transform(axeOrPickaxe())
             .tag(AllTags.AllBlockTags.RELOCATION_NOT_SUPPORTED.tag)
+            .simpleItem()
             .register();
 
     public static final BlockEntry<SubscriptionManagerBlock> SUBSCRIPTION_MANAGER = NumismaticsSubscriptions.REGISTRATE.block("subscription_manager", SubscriptionManagerBlock::new)
@@ -35,6 +38,8 @@ public class AllBlocks {
             )
             .transform(axeOrPickaxe())
             .tag(AllTags.AllBlockTags.RELOCATION_NOT_SUPPORTED.tag)
+            .addLayer(() -> RenderType::cutoutMipped)
+            .simpleItem()
             .register();
 
 

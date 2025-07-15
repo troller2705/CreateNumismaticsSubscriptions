@@ -32,4 +32,7 @@ public class AllMenuTypes
                 .menu(name, factory, screenFactory)
                 .register();
     }
+
+
+    public static void initialize(){}
 }

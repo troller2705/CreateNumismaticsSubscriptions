@@ -1,0 +1,6 @@
+{
+  "parent": "create:block/blaze_burner/block",
+  "textures": {
+    "0": "numismatics_subscriptions:block/subscription_manager/blaze_heater_brazier"
+  }
+}

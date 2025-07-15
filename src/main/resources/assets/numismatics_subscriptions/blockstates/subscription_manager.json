@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "numismatics_subscriptions:block/subscription_manager"
+    }
+  }
+}

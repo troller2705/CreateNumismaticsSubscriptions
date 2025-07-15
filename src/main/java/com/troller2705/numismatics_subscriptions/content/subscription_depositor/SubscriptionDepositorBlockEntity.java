@@ -24,6 +24,7 @@ import com.troller2705.numismatics_subscriptions.NumismaticsSubscriptions;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceBehaviour;
 import dev.ithundxr.createnumismatics.content.coins.MergingCoinBag;
+import dev.ithundxr.createnumismatics.content.depositor.AbstractDepositorBlockEntity;
 import dev.ithundxr.createnumismatics.util.TextUtils;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.lang.Lang;
@@ -43,12 +44,18 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 
-public class SubscriptionDepositorBlockEntity extends PatchedAbstractDepositorBlockEntity implements MenuProvider {
+public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEntity implements MenuProvider {
 
     private SliderStylePriceBehaviour price;
 
     public SubscriptionDepositorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
+    }
+
+    @Override
+    public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+        price = new SliderStylePriceBehaviour(this, this::addCoin, this::getCoinCount);
+        behaviours.add(price);
     }
 
     public int getCoinCount(Coin coin) {

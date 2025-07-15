@@ -8,7 +8,10 @@ import net.neoforged.fml.common.Mod;
 public class NumismaticsSubscriptionsClient {
 
     public NumismaticsSubscriptionsClient(ModContainer modContainer){
+
+        AllPartialModels.initialize();
         AllCreativeTabs.initialize();
+
     }
 
 }

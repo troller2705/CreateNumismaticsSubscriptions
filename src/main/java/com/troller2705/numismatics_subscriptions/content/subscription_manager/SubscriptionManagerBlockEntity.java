@@ -14,6 +14,7 @@ import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListContai
 import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListHolder;
 import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListMenu;
 import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BankAccountBehaviour;
+import dev.ithundxr.createnumismatics.content.coins.MergingCoinBag;
 import dev.ithundxr.createnumismatics.registry.NumismaticsMenuTypes;
 import dev.ithundxr.createnumismatics.util.Utils;
 import net.createmod.catnip.animation.LerpedFloat;
@@ -130,6 +131,31 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
         bankAccountBehaviour = new BankAccountBehaviour(this);
         behaviours.add(bankAccountBehaviour);
+        price = new SliderStylePriceBehaviour(this, this::addCoin, this::getCoinCount);
+        behaviours.add(price);
+    }
+
+    public int getCoinCount(Coin coin) {
+        return 0;
+    }
+
+    public void addCoins(int totalPrice) {
+        MergingCoinBag coinBag = new MergingCoinBag(totalPrice);
+
+        for (int i = Coin.values().length - 1; i >= 0; i--) {
+            Coin coin = Coin.values()[i];
+            int count = coinBag.get(coin).getFirst();
+            if (count > 0) {
+                coinBag.subtract(coin, count);
+                addCoin(coin, count);
+            }
+        }
+    }
+
+    public void addCoin(Coin coin, int count) {
+        BankAccount account = getAccount();
+        account.deposit(coin, count);
+        setChanged();
     }
 
     private void onTrustListChanged() {
@@ -294,18 +320,18 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Component.translatable("block.numismatics.blaze_banker");
+        return Component.translatable("block.numismatics_subscriptions.subscription_manager");
     }
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+    public AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player) {
         return new SubscriptionManagerMenu(AllMenuTypes.SUBSCRIPTION_MANAGER.get(), i, inventory, this);
     }
 
     @NotNull
     public String getLabelNonNull() {
-        return getLabel() == null ? "Blaze Banker" : getLabel();
+        return getLabel() == null ? "Subscription Manager" : getLabel();
     }
 
     public UUID getAccountId() {
