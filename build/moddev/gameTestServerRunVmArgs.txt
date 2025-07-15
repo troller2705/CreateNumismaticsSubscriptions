@@ -16,5 +16,5 @@ jdk.naming.dns/com.sun.jndi.dns=java.naming
 "-DlegacyClassPath.file=D:\\MC Mods Custom\\CreateNumismaticsSubscriptions\\build\\moddev\\gameTestServerLegacyClasspath.txt"
 -Dneoforge.enableGameTest=true
 -Dneoforge.gameTestServer=true
--Dneoforge.enabledGameTestNamespaces=numismaticssubs
+-Dneoforge.enabledGameTestNamespaces=numismatics_subscriptions
 -Dforge.logging.markers=REGISTRIES

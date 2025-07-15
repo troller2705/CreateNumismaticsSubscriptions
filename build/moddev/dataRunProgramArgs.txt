@@ -21,7 +21,7 @@ C:\\Users\\Cole\\.gradle\\caches\\neoformruntime\\assets
 
 # User Supplied Program Arguments
 --mod
-numismaticssubs
+numismatics_subscriptions
 --all
 --output
 "D:\\MC Mods Custom\\CreateNumismaticsSubscriptions\\src\\generated\\resources"

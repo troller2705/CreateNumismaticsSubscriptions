@@ -30,7 +30,6 @@ repositories {
     maven { url = "https://maven.jamieswhiteshirt.com/libs-release" } // Reach Entity Attributes
     maven { url = "https://maven.createmod.net" } // Create, Ponder, Flywheel
     maven {url = "https://maven.ithundxr.dev/releases" } // Create: Numismatics
-    "https://maven.ithundxr.dev/releases/dev/ithundxr/createnumismatics/CreateNumismatics-neoforge-1.21.1/1.0.16-alpha+neoforge-mc1.21.1/CreateNumismatics-neoforge-1.21.1-1.0.16-alpha+neoforge-mc1.21.1.pom"
     mavenCentral()
 }
 
