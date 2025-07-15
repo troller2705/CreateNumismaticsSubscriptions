@@ -1,5 +1,5 @@
 modLoader="neoforge"
-loaderVersion="[2,)" # At least version 1 of the loader
+loaderVersion="[1,)" # At least version 1 of the loader
 license="MIT"
 [[mods]]
 modId="numismatics_subscriptions"
