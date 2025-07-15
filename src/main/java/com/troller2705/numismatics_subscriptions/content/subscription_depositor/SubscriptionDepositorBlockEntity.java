@@ -19,6 +19,7 @@
 package com.troller2705.numismatics_subscriptions.content.subscription_depositor;
 
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.troller2705.numismatics_subscriptions.AllMenuTypes;
 import dev.ithundxr.createnumismatics.Numismatics;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceBehaviour;
@@ -65,7 +66,7 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Component.translatable("block.numismatics.brass_depositor");
+        return Component.translatable("block.numismatics_subscriptions.subscription_depositor");
     }
 
     @Nullable
@@ -73,7 +74,7 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
     public AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player) {
         if (!isTrusted(player))
             return null;
-        return new SubscriptionDepositorMenu(NumismaticsMenuTypes.BRASS_DEPOSITOR.get(), i, inventory, this);
+        return new SubscriptionDepositorMenu(AllMenuTypes.SUBSCRIPTION_DEPOSITOR.get(), i, inventory, this);
     }
 
     public int getTotalPrice() {
@@ -122,6 +123,6 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
 
     @Override
     public void openTrustListMenu(ServerPlayer player) {
-        TrustListMenu.openMenu(this, player, NumismaticsBlocks.BRASS_DEPOSITOR.asStack());
+        //TrustListMenu.openMenu(this, player, AllMenuTypes.SUBSCRIPTION_DEPOSITOR.asStack());
     }
 }
