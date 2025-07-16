@@ -167,6 +167,29 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
         timeTypeScrollInputs.setState(0);
         timeTypeScrollInputs.onChanged();
 
+        int baseX3 = baseX + 25;
+        int baseY2 = y + background.height - 19;
+
+        final String[] accountOptions = {"Joint", "Single"};
+
+        final Label accountTypeLabel = new Label(baseX3, baseY2, CommonComponents.EMPTY).withShadow();
+        addRenderableWidget(accountTypeLabel);
+
+        final ScrollInput accountTypeScrollInputs = new ScrollInput(baseX3, baseY2, 36, 18)
+                .withRange(0, timeOptions.length)
+                .writingTo(accountTypeLabel)
+                .titled(Component.literal("Account Type"))
+                .calling((value) -> {
+                    String text = accountOptions[value];
+                    accountTypeLabel.text = Component.literal(text);
+                    accountTypeLabel.setX(baseX3 + 18 - font.width(accountTypeLabel.text) / 2);
+                });
+        addRenderableWidget(accountTypeScrollInputs);
+
+        // Set default state and call update
+        accountTypeScrollInputs.setState(0);
+        accountTypeScrollInputs.onChanged();
+
         extraAreas = ImmutableList.of(new Rect2i(x + background.width, y + background.height - 68, 84, 84));
     }
 
