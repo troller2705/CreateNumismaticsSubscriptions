@@ -1,8 +1,42 @@
 modLoader="javafml"
 loaderVersion="[0,)" # At least version 1 of the loader
-license="MIT"
+license="All rights reserved"
+
 [[mods]]
 modId="numismatics_subscriptions"
 version="1.0.0"
 displayName="Create: Numismatics - Subscriptions"
+authors = "Troller2705, ThermalCube"
 description="Extension for Create: Numismatics"
+
+[[mixins]]
+config="numismatics_subscriptions.mixins.json"
+
+[[dependencies.numismatics_subscriptions]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.187,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.numismatics_subscriptions]]
+modId = "minecraft"
+type = "required"
+versionRange = "1.21.1"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.numismatics_subscriptions]]
+modId = "create"
+type = "required"
+versionRange = "[6.0.6,6.1.0)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.numismatics_subscriptions]]
+modId = "numismatics"
+type = "required"
+versionRange = "[1.0.16,)"
+ordering = "NONE"
+side = "BOTH"
+

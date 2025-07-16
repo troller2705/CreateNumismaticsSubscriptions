@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.troller2705.numismatics_subscriptions.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "BankSavedDataMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "numismatics_subscriptions.refmap.json"
+}
