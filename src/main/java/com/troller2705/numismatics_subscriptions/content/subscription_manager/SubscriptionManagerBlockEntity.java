@@ -50,7 +50,6 @@ import java.util.UUID;
 
 public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements Trusted, TrustListHolder, MenuProvider {
 
-    public Container cardContainer;
     private SliderStylePriceBehaviour price;
     protected LerpedFloat headAnimation;
     protected LerpedFloat headAngle;
