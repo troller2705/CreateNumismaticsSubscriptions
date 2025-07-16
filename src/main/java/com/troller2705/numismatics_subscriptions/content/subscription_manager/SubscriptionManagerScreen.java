@@ -150,7 +150,7 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
                 .scale(5)
                 .render(graphics);
 
-        graphics.drawCenteredString(font, title, x + (background.width - 8) / 2, y + 3, 0xFFFFFF);
+//        graphics.drawCenteredString(font, title, x + (background.width - 8) / 2, y + 3, 0xFFFFFF);
 
         Couple<Integer> cogsAndSpurs = Coin.COG.convert(menu.contentHolder.getTotalPrice());
         int cogs = cogsAndSpurs.getFirst();

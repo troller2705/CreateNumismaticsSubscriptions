@@ -56,6 +56,7 @@ public class NumismaticsSubscriptions {
     private void commonSetup(FMLCommonSetupEvent event) {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
+        SubscriptionPackets.register();
     }
 
     @SubscribeEvent

@@ -1,5 +1,6 @@
 package com.troller2705.numismatics_subscriptions.content.subscription_manager;
 
+import com.troller2705.numismatics_subscriptions.SubscriptionPackets;
 import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BlazeBankerBlockEntity;
 import dev.ithundxr.createnumismatics.registry.NumismaticsPackets;
 import dev.ithundxr.createnumismatics.registry.packets.NumismaticsBlockEntityConfigurationPacket;
@@ -40,6 +41,6 @@ public class SubscriptionManagerEditPacket extends NumismaticsBlockEntityConfigu
 
     @Override
     public PacketTypeProvider getTypeProvider() {
-        return NumismaticsPackets.BLAZE_BANKER_EDIT;
+        return SubscriptionPackets.SUBSCRIPTION_MANAGER_EDIT;
     }
 }
