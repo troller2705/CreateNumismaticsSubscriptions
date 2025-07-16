@@ -115,9 +115,9 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
         // Some example preset ranges for different options
         Map<String, Integer> timeOptionMaxValues = Map.of(
                 "Ticks", 61,
-                "Seconds", 61,
-                "Minutes", 61,
-                "Hours", 25
+                "Secs", 61,
+                "Mins", 61,
+                "Hrs", 25
         );
 
         final Label timeLabel = new Label(baseX, baseY + 5, CommonComponents.EMPTY).withShadow();
