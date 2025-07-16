@@ -1,6 +1,8 @@
 package com.troller2705.numismatics_subscriptions.content.subscription_manager;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.platform.InputConstants;
+import com.simibubi.create.content.trains.station.NoShadowFontWrapper;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
@@ -8,15 +10,15 @@ import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.Label;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import com.troller2705.numismatics_subscriptions.AllBlocks;
+import com.troller2705.numismatics_subscriptions.SubscriptionGuiTextures;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceConfigurationPacket;
-import dev.ithundxr.createnumismatics.registry.NumismaticsBlocks;
-import dev.ithundxr.createnumismatics.registry.NumismaticsGuiTextures;
 import dev.ithundxr.createnumismatics.util.TextUtils;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.gui.element.GuiGameElement;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -26,9 +28,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<SubscriptionManagerMenu> {
-    private final NumismaticsGuiTextures background = NumismaticsGuiTextures.BRASS_DEPOSITOR;
+    private EditBox labelBox;
+
+    private final SubscriptionGuiTextures background = SubscriptionGuiTextures.SUBSCRIPTION_MANAGER;
     private final ItemStack renderedItem = AllBlocks.SUBSCRIPTION_MANAGER.asStack();
 
     private final int COIN_COUNT = Coin.values().length;
@@ -51,11 +56,24 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
         int x = leftPos;
         int y = topPos;
 
-//        IconButton trustListButton = new IconButton(x + 7, y + 121, AllIcons.I_VIEW_SCHEDULE);
-//        trustListButton.withCallback(() -> {
+        Consumer<String> onTextChanged = s -> labelBox.setX(nameBoxX(s, labelBox));
+        labelBox = new EditBox(new NoShadowFontWrapper(font), x + 23, y + 4, background.width - 20, 10,
+                Component.literal(menu.contentHolder.getLabelNonNull()));
+        labelBox.setBordered(false);
+        labelBox.setMaxLength(25);
+        labelBox.setTextColor(0x592424);
+        labelBox.setValue(menu.contentHolder.getLabelNonNull());
+        labelBox.setFocused(false);
+        labelBox.mouseClicked(0, 0, 0);
+        labelBox.setResponder(onTextChanged);
+        labelBox.setX(nameBoxX(labelBox.getValue(), labelBox));
+        addRenderableWidget(labelBox);
+
+        IconButton trustListButton = new IconButton(x + 7, y + background.height - 24, AllIcons.I_VIEW_SCHEDULE);
+        trustListButton.withCallback(() -> {
 //            menu.contentHolder.openTrustList();
-//        });
-//        addRenderableWidget(trustListButton);
+        });
+        addRenderableWidget(trustListButton);
 
         IconButton confirmButton = new IconButton(x + background.width - 33, y + background.height - 24, AllIcons.I_CONFIRM);
         confirmButton.withCallback(this::onClose);
@@ -90,8 +108,30 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
     }
 
     @Override
+    protected void containerTick() {
+        super.containerTick();
+        if (getFocused() != labelBox) {
+            labelBox.setCursorPosition(labelBox.getValue()
+                    .length());
+            labelBox.setHighlightPos(labelBox.getCursorPosition());
+        }
+//        toggleExtractionIndicator.state = menu.contentHolder.allowExtraction() ? Indicator.State.GREEN : Indicator.State.RED;
+    }
+
+    @Override
     public List<Rect2i> getExtraAreas() {
         return extraAreas;
+    }
+
+    @Override
+    protected void renderForeground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.renderForeground(graphics, mouseX, mouseY, partialTicks);
+        int y = topPos;
+
+        String text = labelBox.getValue();
+
+        if (!labelBox.isFocused())
+            AllGuiTextures.STATION_EDIT_NAME.render(graphics, nameBoxX(text, labelBox) + font.width(text) + 5, y + 1);
     }
 
     @Override
@@ -121,8 +161,52 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
     }
 
     @Override
+    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+        if (!labelBox.isFocused() && pMouseY > topPos && pMouseY < topPos + 14 && pMouseX > leftPos
+                && pMouseX < leftPos + background.width) {
+            labelBox.setFocused(true);
+            labelBox.setHighlightPos(0);
+            setFocused(labelBox);
+            return true;
+        }
+        return super.mouseClicked(pMouseX, pMouseY, pButton);
+    }
+
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
+        boolean hitEnter = getFocused() instanceof EditBox
+                && (pKeyCode == InputConstants.KEY_RETURN || pKeyCode == InputConstants.KEY_NUMPADENTER);
+
+        if (hitEnter && labelBox.isFocused()) {
+            if (labelBox.getValue().isEmpty())
+                labelBox.setValue("Subscription Manager");
+            labelBox.setFocused(false);
+            syncName();
+            return true;
+        }
+
+        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
+    }
+
+    private void syncName() {
+        if (!labelBox.getValue().equals(menu.contentHolder.getLabel()))
+            setLabel(labelBox.getValue());
+    }
+
+    private void setLabel(String label) {
+        CatnipServices.NETWORK.sendToServer(new SubscriptionManagerEditPacket(menu.contentHolder.getBlockPos(), label));
+    }
+
+    @Override
     public void removed() {
         CatnipServices.NETWORK.sendToServer(new SliderStylePriceConfigurationPacket(menu.contentHolder));
         super.removed();
+        if (labelBox == null)
+            return;
+        syncName();
+    }
+
+    private int nameBoxX(String s, EditBox nameBox) {
+        return leftPos + background.width / 2 - (Math.min(font.width(s), nameBox.getWidth()) + 10) / 2;
     }
 }
