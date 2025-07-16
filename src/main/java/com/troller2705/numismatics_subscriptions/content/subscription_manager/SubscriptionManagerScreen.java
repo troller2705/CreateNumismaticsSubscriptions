@@ -9,8 +9,10 @@ import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.Label;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
+import com.simibubi.create.foundation.gui.widget.SelectionScrollInput;
 import com.troller2705.numismatics_subscriptions.AllBlocks;
 import com.troller2705.numismatics_subscriptions.SubscriptionGuiTextures;
+import com.troller2705.numismatics_subscriptions.SubscriptionIcons;
 import dev.ithundxr.createnumismatics.base.client.rendering.GuiBlockEntityRenderBuilder;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceConfigurationPacket;
@@ -28,6 +30,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +81,12 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
         });
         addRenderableWidget(trustListButton);
 
+        IconButton subsListButton = new IconButton(x + 29, y + background.height - 24, SubscriptionIcons.I_SUBS);
+        subsListButton.withCallback(() -> {
+//            menu.contentHolder.openTrustList();
+        });
+        addRenderableWidget(subsListButton);
+
         IconButton confirmButton = new IconButton(x + background.width - 33, y + background.height - 24, AllIcons.I_CONFIRM);
         confirmButton.withCallback(this::onClose);
         addRenderableWidget(confirmButton);
@@ -114,10 +123,15 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
 
         // Some example preset ranges for different options
         Map<String, Integer> timeOptionMaxValues = Map.of(
-                "Ticks", 61,
                 "Secs", 61,
                 "Mins", 61,
                 "Hrs", 25
+        );
+        // Some example preset ranges for different options
+        Map<String, Integer> timeOptionMinValues = Map.of(
+                "Secs", 20,
+                "Mins", 1,
+                "Hrs", 1
         );
 
         final Label timeLabel = new Label(baseX, baseY + 5, CommonComponents.EMPTY).withShadow();
@@ -136,28 +150,35 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
 //        timeScrollInputs.setState(menu.contentHolder.getPrice(coin));
         timeScrollInputs.onChanged();
 
-
-        final String[] timeOptions = {"Ticks", "Secs", "Mins", "Hrs"};
+        final String[] timeOptns= {"Secs","Mins","Hrs"};
+        final List<Component> timeOptions = Arrays.asList(
+                Component.literal("Secs"),
+                Component.literal("Mins"),
+                Component.literal("Hrs")
+        );
 
         final Label timeTypeLabel = new Label(baseX2, baseY + 5, CommonComponents.EMPTY).withShadow();
         addRenderableWidget(timeTypeLabel);
 
-        final ScrollInput timeTypeScrollInputs = new ScrollInput(baseX2, baseY, 36, 18)
-                .withRange(0, timeOptions.length)
+        final SelectionScrollInput timeTypeScrollInputs = (SelectionScrollInput) new SelectionScrollInput(baseX2, baseY, 36, 18)
+                .forOptions(timeOptions)
                 .writingTo(timeTypeLabel)
                 .titled(Component.literal("Time Unit"))
-                .calling((value) -> {
-                    String text = timeOptions[value];
-                    timeTypeLabel.text = Component.literal(text);
+                .calling((idx) -> {
+//                    String text = timeOptions[value];
+//                    timeTypeLabel.text = Component.literal(text);
                     timeTypeLabel.setX(baseX2 + 18 - font.width(timeTypeLabel.text) / 2);
 
                     // Change the range of time value input based on selected unit
-                    int maxValue = timeOptionMaxValues.getOrDefault(text, 1);
-                    timeScrollInputs.withRange(0, maxValue);
+                    int maxValue = timeOptionMaxValues.getOrDefault(timeOptns[idx], 1);
+                    int minValue = timeOptionMinValues.getOrDefault(timeOptns[idx], 1);
+                    timeScrollInputs.withRange(minValue, maxValue);
 
                     // Reset state if out of bounds
                     if (timeScrollInputs.getState() > maxValue)
                         timeScrollInputs.setState(maxValue);
+                    if (timeScrollInputs.getState() < minValue)
+                        timeScrollInputs.setState(minValue);
 
                     timeScrollInputs.onChanged();
                 });
@@ -170,18 +191,21 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
         int baseX3 = baseX + 25;
         int baseY2 = y + background.height - 19;
 
-        final String[] accountOptions = {"Joint", "Single"};
+        final List<Component> accountOptions = Arrays.asList(
+                Component.literal("Joint"),
+                Component.literal("Single")
+        );
 
         final Label accountTypeLabel = new Label(baseX3, baseY2, CommonComponents.EMPTY).withShadow();
         addRenderableWidget(accountTypeLabel);
 
-        final ScrollInput accountTypeScrollInputs = new ScrollInput(baseX3, baseY2, 36, 18)
-                .withRange(0, accountOptions.length)
+        final SelectionScrollInput accountTypeScrollInputs = (SelectionScrollInput) new SelectionScrollInput(baseX3, baseY2, 36, 18)
+                .forOptions(accountOptions)
                 .writingTo(accountTypeLabel)
                 .titled(Component.literal("Account Type"))
                 .calling((value) -> {
-                    String text = accountOptions[value];
-                    accountTypeLabel.text = Component.literal(text);
+//                    String text = accountOptions[value];
+//                    accountTypeLabel.text = Component.literal(text);
                     accountTypeLabel.setX(baseX3 + 18 - font.width(accountTypeLabel.text) / 2);
                 });
         addRenderableWidget(accountTypeScrollInputs);
