@@ -176,7 +176,7 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
         addRenderableWidget(accountTypeLabel);
 
         final ScrollInput accountTypeScrollInputs = new ScrollInput(baseX3, baseY2, 36, 18)
-                .withRange(0, timeOptions.length)
+                .withRange(0, accountOptions.length)
                 .writingTo(accountTypeLabel)
                 .titled(Component.literal("Account Type"))
                 .calling((value) -> {
