@@ -70,7 +70,7 @@ public class SubscriptionManagerMenu extends MenuBase<SubscriptionManagerBlockEn
 
         addSlot(new CardSlot.UnboundCardSlot(cardWritingContainer, 0, x, y)); // make here to preserve slot order
 
-        addPlayerSlots(31+13, 185);
+        addPlayerSlots(31+13, 186);
 
         // label coins
 
