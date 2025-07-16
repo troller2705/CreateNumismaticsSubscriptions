@@ -30,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<SubscriptionManagerMenu> {
@@ -109,6 +110,16 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
         int baseX = x + 72;
         int baseY = y + background.height - 55;
 
+        int baseX2 = baseX + 47;
+
+        // Some example preset ranges for different options
+        Map<String, Integer> timeOptionMaxValues = Map.of(
+                "Ticks", 61,
+                "Seconds", 61,
+                "Minutes", 61,
+                "Hours", 25
+        );
+
         final Label timeLabel = new Label(baseX, baseY + 5, CommonComponents.EMPTY).withShadow();
         addRenderableWidget(timeLabel);
 
@@ -126,6 +137,35 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
         timeScrollInputs.onChanged();
 
 
+        final String[] timeOptions = {"Ticks", "Secs", "Mins", "Hrs"};
+
+        final Label timeTypeLabel = new Label(baseX2, baseY + 5, CommonComponents.EMPTY).withShadow();
+        addRenderableWidget(timeTypeLabel);
+
+        final ScrollInput timeTypeScrollInputs = new ScrollInput(baseX2, baseY, 36, 18)
+                .withRange(0, timeOptions.length)
+                .writingTo(timeTypeLabel)
+                .titled(Component.literal("Time Unit"))
+                .calling((value) -> {
+                    String text = timeOptions[value];
+                    timeTypeLabel.text = Component.literal(text);
+                    timeTypeLabel.setX(baseX2 + 18 - font.width(timeTypeLabel.text) / 2);
+
+                    // Change the range of time value input based on selected unit
+                    int maxValue = timeOptionMaxValues.getOrDefault(text, 1);
+                    timeScrollInputs.withRange(0, maxValue);
+
+                    // Reset state if out of bounds
+                    if (timeScrollInputs.getState() > maxValue)
+                        timeScrollInputs.setState(maxValue);
+
+                    timeScrollInputs.onChanged();
+                });
+        addRenderableWidget(timeTypeScrollInputs);
+
+        // Set default state and call update
+        timeTypeScrollInputs.setState(0);
+        timeTypeScrollInputs.onChanged();
 
         extraAreas = ImmutableList.of(new Rect2i(x + background.width, y + background.height - 68, 84, 84));
     }
