@@ -1,16 +1,17 @@
 package com.troller2705.numismatics_subscriptions.content.subscription_depositor;
 
 import com.google.common.collect.ImmutableList;
+
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.Label;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
+import com.troller2705.numismatics_subscriptions.SubscriptionGuiTextures;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceConfigurationPacket;
 import dev.ithundxr.createnumismatics.registry.NumismaticsBlocks;
-import dev.ithundxr.createnumismatics.registry.NumismaticsGuiTextures;
 import dev.ithundxr.createnumismatics.util.TextUtils;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.gui.element.GuiGameElement;
@@ -27,7 +28,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class SubscriptionDepositorScreen extends AbstractSimiContainerScreen<SubscriptionDepositorMenu> {
-    private final NumismaticsGuiTextures background = NumismaticsGuiTextures.BRASS_DEPOSITOR;
+    private final SubscriptionGuiTextures background = SubscriptionGuiTextures.SUBSCRIPTION_DEPOSITOR;
     private final ItemStack renderedItem = NumismaticsBlocks.BRASS_DEPOSITOR.asStack();
 
     private final int COIN_COUNT = Coin.values().length;
@@ -50,40 +51,10 @@ public class SubscriptionDepositorScreen extends AbstractSimiContainerScreen<Sub
         int x = leftPos;
         int y = topPos;
 
-        IconButton trustListButton = new IconButton(x + 7, y + 121, AllIcons.I_VIEW_SCHEDULE);
-        trustListButton.withCallback(() -> {
-            menu.contentHolder.openTrustList();
-        });
-        addRenderableWidget(trustListButton);
-
         IconButton confirmButton = new IconButton(x + background.width - 33, y + background.height - 24, AllIcons.I_CONFIRM);
         confirmButton.withCallback(this::onClose);
         addRenderableWidget(confirmButton);
 
-        for (Coin coin : Coin.values()) {
-            int i = coin.ordinal();
-
-            int baseX = x + 36 + (i < 3 ? 0 : 86) + 13;
-
-            int yIncrement = 22;
-            int baseY = y + 45 + (yIncrement * (i%3));
-
-            coinLabels[i] = new Label(baseX + 18, baseY + 5, CommonComponents.EMPTY).withShadow();
-            addRenderableWidget(coinLabels[i]);
-
-            coinScrollInputs[i] = new ScrollInput(baseX, baseY, 36, 18)
-                    .withRange(0, 129)
-                    .writingTo(coinLabels[i])
-                    .titled(Component.literal(TextUtils.titleCaseConversion(coin.getName(0))))
-                    .calling((value) -> {
-                        menu.contentHolder.setPrice(coin, value);
-                        coinLabels[i].setX(baseX + 18 - font.width(coinLabels[i].text) / 2);
-                    });
-            addRenderableWidget(coinScrollInputs[i]);
-
-            coinScrollInputs[i].setState(menu.contentHolder.getPrice(coin));
-            coinScrollInputs[i].onChanged();
-        }
 
         extraAreas = ImmutableList.of(new Rect2i(x + background.width, y + background.height - 68, 84, 84));
     }
