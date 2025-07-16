@@ -1,5 +1,6 @@
 {
   "itemGroup.numismatics_subscriptions.creative_tab": "Create: Numismatics Subscriptions",
   "block.numismatics_subscriptions.subscription_manager": "Subscription Manager",
-  "block.numismatics_subscriptions.subscription_depositor": "Subscription Depositor"
+  "block.numismatics_subscriptions.subscription_depositor": "Subscription Depositor",
+  "item.numismatics_subscriptions.subscription_guide": "Subscription Guide"
 }

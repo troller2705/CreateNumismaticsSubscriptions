@@ -1,6 +1,5 @@
 package com.troller2705.numismatics_subscriptions;
 
-import dev.ithundxr.createnumismatics.Numismatics;
 import dev.ithundxr.createnumismatics.registry.NumismaticsCreativeModeTabs;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -14,8 +13,10 @@ public class AllCreativeTabs {
             .withTabsBefore(NumismaticsCreativeModeTabs.Tabs.MAIN.getKey())
             .displayItems((itemDisplayParameters, output) -> {
 
-                output.accept(AllBlocks.SUBSCRIPTION_MANAGER.asStack());
                 output.accept(AllBlocks.SUBSCRIPTION_DEPOSITOR.asStack());
+                output.accept(AllBlocks.SUBSCRIPTION_MANAGER.asStack());
+
+                output.accept(AllItems.SUBSCRIPTION_GUIDE.asStack());
 
             })
             .build());

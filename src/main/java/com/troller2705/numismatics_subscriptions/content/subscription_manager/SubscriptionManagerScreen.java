@@ -11,11 +11,13 @@ import com.simibubi.create.foundation.gui.widget.Label;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import com.troller2705.numismatics_subscriptions.AllBlocks;
 import com.troller2705.numismatics_subscriptions.SubscriptionGuiTextures;
+import dev.ithundxr.createnumismatics.base.client.rendering.GuiBlockEntityRenderBuilder;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceConfigurationPacket;
 import dev.ithundxr.createnumismatics.util.TextUtils;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.gui.element.GuiGameElement;
+import net.createmod.catnip.math.AngleHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -155,6 +157,7 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
             AllGuiTextures.STATION_EDIT_NAME.render(graphics, nameBoxX(text, labelBox) + font.width(text) + 5, y + 1);
     }
 
+
     @Override
     protected void renderBg(@NotNull GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         int invX = getLeftOfCentered(AllGuiTextures.PLAYER_INVENTORY.getWidth());
@@ -168,6 +171,12 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
 
         GuiGameElement.of(renderedItem).<GuiGameElement
                         .GuiRenderBuilder>at(x + background.width + 6, y + background.height - 70, -200)
+                .scale(5)
+                .render(graphics);
+
+        GuiBlockEntityRenderBuilder.of(menu.contentHolder)
+                .<GuiGameElement
+                        .GuiRenderBuilder>at(x + background.width + 6, y + background.height - 70, -230)
                 .scale(5)
                 .render(graphics);
 

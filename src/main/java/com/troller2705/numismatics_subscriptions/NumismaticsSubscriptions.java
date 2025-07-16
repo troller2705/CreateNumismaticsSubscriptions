@@ -4,6 +4,9 @@ package com.troller2705.numismatics_subscriptions;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.logging.LogUtils;
 import com.simibubi.create.foundation.data.CreateRegistrate;
+import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BlazeBankerRenderer;
+import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BlazeBankerScreen;
+import dev.ithundxr.createnumismatics.registry.NumismaticsItems;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -44,6 +47,7 @@ public class NumismaticsSubscriptions {
         CREATIVE_MODE_TABS.register(modEventBus);
 
         AllBlocks.initialize();
+        AllItems.initialize();
         AllBlockEntities.initialize();
         AllMenuTypes.initialize();
         AllCreativeTabs.initialize();

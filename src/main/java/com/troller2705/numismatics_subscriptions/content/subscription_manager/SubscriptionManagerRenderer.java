@@ -41,8 +41,6 @@ public class SubscriptionManagerRenderer extends SafeBlockEntityRenderer<Subscri
 			hashCode);
 	}
 
-	private static float yHeight = 0.5f;
-
 	private static void renderShared(PoseStack ms, MultiBufferSource bufferSource,
 									 Level level, BlockState blockState, float animation, float horizontalAngle,
 									 int hashCode) {
@@ -96,7 +94,7 @@ public class SubscriptionManagerRenderer extends SafeBlockEntityRenderer<Subscri
 //			SuperByteBuffer hatBuffer = CachedBuffers.partial(NumismaticsPartialModels.TOP_HAT, blockState);
 			SuperByteBuffer hatBuffer = CachedBuffers.partial(com.troller2705.numismatics_subscriptions.AllPartialModels.MONOCLE, blockState);
             hatBuffer.translate(0, headY, 0);
-            hatBuffer.translateY(yHeight);
+            hatBuffer.translateY(0.49f);
             hatBuffer
 				.rotateCentered(horizontalAngle + Mth.PI, Direction.UP)
 				.rotateCenteredDegrees(180, Direction.UP)
