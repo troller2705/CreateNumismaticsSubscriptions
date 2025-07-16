@@ -3,6 +3,7 @@ package com.troller2705.numismatics_subscriptions.content.subscription_manager;
 import com.simibubi.create.foundation.gui.menu.MenuBase;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.bank.CardSlot;
+import dev.ithundxr.createnumismatics.content.coins.CoinDisplaySlot;
 import dev.ithundxr.createnumismatics.content.coins.CoinItem;
 import dev.ithundxr.createnumismatics.registry.NumismaticsTags;
 import net.minecraft.client.Minecraft;
@@ -57,6 +58,21 @@ public class SubscriptionManagerMenu extends MenuBase<SubscriptionManagerBlockEn
 //        addSlot(new CardSlot.BoundCardSlot(contentHolder.cardContainer, 0, x, y)); // make here to preserve slot order
 
         addPlayerSlots(31+13, 185);
+
+        // label coins
+
+        int labelX1 = 12+13;
+        int labelX2 = labelX1 + 86;
+        int labelY = 46;
+        int labelYIncrement = 22;
+
+        for (int i = 0; i < 6; i++) {
+            Coin coin = Coin.values()[i];
+            int slotX = i < 3 ? labelX1 : labelX2;
+            int slotY = labelY + ((i%3) * labelYIncrement);
+
+            addSlot(new CoinDisplaySlot(coin, slotX, slotY));
+        }
     }
 
     @Override
