@@ -86,6 +86,8 @@ public class SubscriptionManagerMenu extends MenuBase<SubscriptionManagerBlockEn
 
             addSlot(new CoinDisplaySlot(coin, slotX, slotY));
         }
+
+        addSlot(new ClockDisplaySlot(labelX1 + 23,labelY + (labelYIncrement * 3)));
     }
 
     @Override

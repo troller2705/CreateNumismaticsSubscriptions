@@ -104,6 +104,27 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
             coinScrollInputs[i].onChanged();
         }
 
+        int baseX = x + 72;
+        int baseY = y + background.height - 55;
+
+        final Label timeLabel = new Label(baseX, baseY + 5, CommonComponents.EMPTY).withShadow();
+        addRenderableWidget(timeLabel);
+
+        final ScrollInput timeScrollInputs = new ScrollInput(baseX, baseY, 36, 18)
+                .withRange(0, 61)
+                .writingTo(timeLabel)
+                .titled(Component.literal("Time Increment"))
+                .calling((value) -> {
+//                    menu.contentHolder.setPrice(coin, value);
+                    timeLabel.setX(baseX + 18 - font.width(timeLabel.text) / 2);
+                });
+        addRenderableWidget(timeScrollInputs);
+
+//        timeScrollInputs.setState(menu.contentHolder.getPrice(coin));
+        timeScrollInputs.onChanged();
+
+
+
         extraAreas = ImmutableList.of(new Rect2i(x + background.width, y + background.height - 68, 84, 84));
     }
 
