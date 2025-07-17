@@ -106,7 +106,7 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
         int cogs = cogsAndSpurs.getFirst();
         int spurs = cogsAndSpurs.getSecond();
         MutableComponent balanceLabel = Component.translatable("block.numismatics_subscriptions.subscription_depositor.tooltip.price",
-                TextUtils.formatInt(cogs), Coin.COG.getName(cogs), spurs, "Time", "Unit");
+                TextUtils.formatInt(cogs), Coin.COG.getName(cogs), spurs, "500", "Secs");
         Lang.builder(NumismaticsSubscriptions.MODID)
                 .add(balanceLabel.withStyle(Coin.closest(price.getTotalPrice()).rarity.color()))
                 .forGoggles(tooltip);
