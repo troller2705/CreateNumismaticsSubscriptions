@@ -24,6 +24,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -85,8 +87,8 @@ public class SubscriptionDepositorScreen extends AbstractSimiContainerScreen<Sub
         Couple<Integer> cogsAndSpurs = Coin.COG.convert(menu.contentHolder.getTotalPrice());
         int cogs = cogsAndSpurs.getFirst();
         int spurs = cogsAndSpurs.getSecond();
-        Component balanceLabel = Component.translatable("block.numismatics.brass_depositor.tooltip.price",
-                TextUtils.formatInt(cogs), Coin.COG.getName(cogs), spurs);
+        Component balanceLabel = Component.translatable("block.numismatics_subscriptions.subscription_depositor.tooltip.price",
+                TextUtils.formatInt(cogs), Coin.COG.getName(cogs), spurs, "500", "Secs");
         graphics.drawCenteredString(font, balanceLabel, x + (background.width - 8) / 2, y + 21, 0xFFFFFF);
     }
 
