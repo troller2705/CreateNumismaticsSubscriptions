@@ -316,6 +316,7 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
 
     @Override
     public void removed() {
+        //TODO: Needs new packet to update ExtendedBankAcount.price instead
         CatnipServices.NETWORK.sendToServer(new SliderStylePriceConfigurationPacket(menu.contentHolder));
         super.removed();
         if (labelBox == null)

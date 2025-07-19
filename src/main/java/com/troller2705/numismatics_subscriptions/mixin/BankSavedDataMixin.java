@@ -1,5 +1,6 @@
 package com.troller2705.numismatics_subscriptions.mixin;
 
+import com.troller2705.numismatics_subscriptions.content.backend.ExtendedBankAccount;
 import dev.ithundxr.createnumismatics.Numismatics;
 import dev.ithundxr.createnumismatics.content.backend.BankAccount;
 import dev.ithundxr.createnumismatics.content.backend.BankSavedData;
@@ -46,7 +47,7 @@ public abstract class BankSavedDataMixin {
         Map<UUID, BankAccount> accounts = new HashMap<>();
 
         NBTHelper.iterateCompoundList(tag.getList("Accounts", Tag.TAG_COMPOUND), c -> {
-            BankAccount account = BankAccount.load(c);
+            BankAccount account = ExtendedBankAccount.load(c);
             if (account != null)
                 accounts.put(account.id, account);
         });

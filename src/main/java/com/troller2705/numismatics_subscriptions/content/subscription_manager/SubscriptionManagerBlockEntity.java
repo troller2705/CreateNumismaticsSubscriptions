@@ -5,17 +5,14 @@ import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.troller2705.numismatics_subscriptions.AllMenuTypes;
+import com.troller2705.numismatics_subscriptions.content.backend.ExtendedBankAccountBehaviour;
 import dev.ithundxr.createnumismatics.Numismatics;
 import dev.ithundxr.createnumismatics.content.backend.BankAccount;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.Trusted;
-import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceBehaviour;
 import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListContainer;
 import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListHolder;
-import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListMenu;
-import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BankAccountBehaviour;
-import dev.ithundxr.createnumismatics.content.coins.MergingCoinBag;
-import dev.ithundxr.createnumismatics.registry.NumismaticsMenuTypes;
+import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BlazeBankerScreen;
 import dev.ithundxr.createnumismatics.util.Utils;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.math.AngleHelper;
@@ -50,7 +47,6 @@ import java.util.UUID;
 
 public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements Trusted, TrustListHolder, MenuProvider {
 
-    private SliderStylePriceBehaviour price;
     protected LerpedFloat headAnimation;
     protected LerpedFloat headAngle;
 
@@ -60,7 +56,7 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
     // only available on server
     private int lastSentBalance = 0;
 
-    protected BankAccountBehaviour bankAccountBehaviour;
+    protected ExtendedBankAccountBehaviour bankAccountBehaviour;
 
     @Nullable
     protected UUID owner;
@@ -128,33 +124,8 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        bankAccountBehaviour = new BankAccountBehaviour(this);
+        bankAccountBehaviour = new ExtendedBankAccountBehaviour(this);
         behaviours.add(bankAccountBehaviour);
-        price = new SliderStylePriceBehaviour(this, this::addCoin, this::getCoinCount);
-        behaviours.add(price);
-    }
-
-    public int getCoinCount(Coin coin) {
-        return 0;
-    }
-
-    public void addCoins(int totalPrice) {
-        MergingCoinBag coinBag = new MergingCoinBag(totalPrice);
-
-        for (int i = Coin.values().length - 1; i >= 0; i--) {
-            Coin coin = Coin.values()[i];
-            int count = coinBag.get(coin).getFirst();
-            if (count > 0) {
-                coinBag.subtract(coin, count);
-                addCoin(coin, count);
-            }
-        }
-    }
-
-    public void addCoin(Coin coin, int count) {
-        BankAccount account = getAccount();
-        account.deposit(coin, count);
-        setChanged();
     }
 
     private void onTrustListChanged() {
@@ -355,12 +326,13 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
     }
 
     public int getTotalPrice() {
-        return price.getTotalPrice();
+
+        return bankAccountBehaviour.getAccount().getCoinPrice().getTotalPrice();
     }
 
     public int getPrice(Coin coin) {
-        return price.getPrice(coin);
+        return bankAccountBehaviour.getAccount().getCoinPrice().getPrice(coin);
     }
 
-    public void setPrice(Coin coin, int price) { this.price.setPrice(coin, price); }
+    public void setPrice(Coin coin, int price) { bankAccountBehaviour.getAccount().getCoinPrice().setPrice(coin, price); }
 }
