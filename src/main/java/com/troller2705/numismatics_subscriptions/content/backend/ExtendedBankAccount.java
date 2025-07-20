@@ -12,6 +12,7 @@ import java.util.UUID;
 public class ExtendedBankAccount extends BankAccount {
 
     private long interval;
+    private String unit;
     private CoinPrice coinPrice;
 
 
@@ -21,7 +22,8 @@ public class ExtendedBankAccount extends BankAccount {
 
     protected ExtendedBankAccount(UUID id, Type type, int balance, boolean clientSide) {
         super(id, type, balance, clientSide);
-        interval = -1;
+        interval = 20;
+        unit = "Secs";
         coinPrice = new CoinPrice();
     }
 
@@ -30,6 +32,7 @@ public class ExtendedBankAccount extends BankAccount {
         var tag = super.save(_tag);
 
         tag.putLong("Interval", this.interval);
+        tag.putString("Unit", this.unit);
         this.coinPrice.write(tag);
 
         return tag;
@@ -38,6 +41,10 @@ public class ExtendedBankAccount extends BankAccount {
     public static BankAccount load(CompoundTag tag){
 
         if(!tag.contains("Interval")){
+            return BankAccount.load(tag);
+        }
+
+        if(!tag.contains("Unit")){
             return BankAccount.load(tag);
         }
 
@@ -69,6 +76,10 @@ public class ExtendedBankAccount extends BankAccount {
             account.interval = tag.getLong("Interval");
         }
 
+        if(tag.contains("Unit")){
+            account.unit = tag.getString("Unit");
+        }
+
         account.coinPrice.read(tag);
 
         return account;
@@ -82,6 +93,10 @@ public class ExtendedBankAccount extends BankAccount {
     public void setInterval(long interval) {
         this.interval = interval;
     }
+
+    public String getUnit() { return unit; }
+
+    public void setUnit(String unit) { this.unit = unit; }
 
     public CoinPrice getCoinPrice() {
         return coinPrice;
