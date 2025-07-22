@@ -202,7 +202,7 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
         final SelectionScrollInput accountTypeScrollInputs = (SelectionScrollInput) new SelectionScrollInput(baseX3, baseY2, 36, 18)
                 .forOptions(accountOptions)
                 .writingTo(accountTypeLabel)
-                .titled(Component.literal("Account Type"))
+                .titled(Component.literal("Accepted Account Type"))
                 .calling((value) -> {
 //                    String text = accountOptions[value];
 //                    accountTypeLabel.text = Component.literal(text);
