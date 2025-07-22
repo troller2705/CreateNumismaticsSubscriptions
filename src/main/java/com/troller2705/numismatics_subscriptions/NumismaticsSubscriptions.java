@@ -4,6 +4,7 @@ package com.troller2705.numismatics_subscriptions;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.logging.LogUtils;
 import com.simibubi.create.foundation.data.CreateRegistrate;
+import com.troller2705.numismatics_subscriptions.content.backend.SubscriptionsBankManager;
 import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BlazeBankerBlockEntity;
 import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BlazeBankerRenderer;
 import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BlazeBankerScreen;
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
 public class NumismaticsSubscriptions {
     public static final String MODID = "numismatics_subscriptions";
     private static final Logger LOGGER = LogUtils.getLogger();
+    public static final SubscriptionsBankManager BANK = new SubscriptionsBankManager();
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
