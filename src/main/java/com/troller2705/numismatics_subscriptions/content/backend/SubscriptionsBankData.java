@@ -21,7 +21,7 @@ public class SubscriptionsBankData extends SavedData
         for (Tag t : accounts) {
             CompoundTag accTag = (CompoundTag) t;
             ExtendedAccountData account = ExtendedAccountData.load(accTag);
-            data.extendedAccounts.put(account.id(), account);
+            data.extendedAccounts.put(account.id, account);
         }
         return data;
     }

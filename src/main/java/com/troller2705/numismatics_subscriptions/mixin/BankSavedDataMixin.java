@@ -1,6 +1,5 @@
 package com.troller2705.numismatics_subscriptions.mixin;
 
-import com.troller2705.numismatics_subscriptions.content.backend.ExtendedBankAccount;
 import dev.ithundxr.createnumismatics.Numismatics;
 import dev.ithundxr.createnumismatics.content.backend.BankAccount;
 import dev.ithundxr.createnumismatics.content.backend.BankSavedData;
@@ -35,39 +34,39 @@ public abstract class BankSavedDataMixin {
     public abstract void setAccounts(Map<UUID, BankAccount> accounts);
 
 
-    @Inject(
-            method = "load(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/core/HolderLookup$Provider;)Ldev/ithundxr/createnumismatics/content/backend/BankSavedData;",
-            at = @At("HEAD"),
-            cancellable = true
-    )
-    private static void injectCustomLoad(CompoundTag tag, HolderLookup.Provider provider, CallbackInfoReturnable<BankSavedData> cir) {
-        BankSavedData custom = callConstructor();
-        BankSavedDataMixin accessor = (BankSavedDataMixin) (Object) custom;
-
-        Map<UUID, BankAccount> accounts = new HashMap<>();
-
-        NBTHelper.iterateCompoundList(tag.getList("Accounts", Tag.TAG_COMPOUND), c -> {
-            BankAccount account = ExtendedBankAccount.load(c);
-            if (account != null)
-                accounts.put(account.id, account);
-        });
-
-        accessor.setAccounts(accounts);
-
-        cir.setReturnValue(custom);
-    }
-
-    @Inject(
-            method = "save(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/core/HolderLookup$Provider;)Lnet/minecraft/nbt/CompoundTag;",
-            at = @At("HEAD"),
-            cancellable = true
-    )
-    private void injectCustomSave(CompoundTag tag, HolderLookup.Provider registries, CallbackInfoReturnable<CompoundTag> cir) {
-
-        tag.put("Accounts", NBTHelper.writeCompoundList(Numismatics.BANK.accounts.values(), t -> t.save(new CompoundTag())));
-
-        cir.setReturnValue(tag);
-    }
+//    @Inject(
+//            method = "load(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/core/HolderLookup$Provider;)Ldev/ithundxr/createnumismatics/content/backend/BankSavedData;",
+//            at = @At("HEAD"),
+//            cancellable = true
+//    )
+//    private static void injectCustomLoad(CompoundTag tag, HolderLookup.Provider provider, CallbackInfoReturnable<BankSavedData> cir) {
+//        BankSavedData custom = callConstructor();
+//        BankSavedDataMixin accessor = (BankSavedDataMixin) (Object) custom;
+//
+//        Map<UUID, BankAccount> accounts = new HashMap<>();
+//
+//        NBTHelper.iterateCompoundList(tag.getList("Accounts", Tag.TAG_COMPOUND), c -> {
+//            BankAccount account = ExtendedBankAccount.load(c);
+//            if (account != null)
+//                accounts.put(account.id, account);
+//        });
+//
+//        accessor.setAccounts(accounts);
+//
+//        cir.setReturnValue(custom);
+//    }
+//
+//    @Inject(
+//            method = "save(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/core/HolderLookup$Provider;)Lnet/minecraft/nbt/CompoundTag;",
+//            at = @At("HEAD"),
+//            cancellable = true
+//    )
+//    private void injectCustomSave(CompoundTag tag, HolderLookup.Provider registries, CallbackInfoReturnable<CompoundTag> cir) {
+//
+//        tag.put("Accounts", NBTHelper.writeCompoundList(Numismatics.BANK.accounts.values(), t -> t.save(new CompoundTag())));
+//
+//        cir.setReturnValue(tag);
+//    }
 
 }
 

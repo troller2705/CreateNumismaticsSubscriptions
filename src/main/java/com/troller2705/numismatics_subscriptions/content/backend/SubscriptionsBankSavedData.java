@@ -29,7 +29,8 @@ public class SubscriptionsBankSavedData extends SavedData {
         var sd = new SubscriptionsBankSavedData();
         NBTHelper.iterateCompoundList(tag.getList("ExtendedAccounts", Tag.TAG_COMPOUND), compound -> {
             var account = ExtendedAccountData.load(compound);
-            sd.accounts.put(account.id(), account);
+            if(account != null)
+                sd.accounts.put(account.id, account);
         });
         return sd;
     }
@@ -42,7 +43,6 @@ public class SubscriptionsBankSavedData extends SavedData {
                 .computeIfAbsent(factory(), "numismatics_subscriptions_bank");
     }
 
-//    public Map<? extends UUID, ? extends ExtendedBankAccount> getAccounts() {
-//        return accounts;
-//    }
+    public Map<UUID, ExtendedAccountData> getAccounts(){ return accounts; }
+
 }

@@ -1,7 +1,10 @@
 package com.troller2705.numismatics_subscriptions.content.backend;
 
+import dev.ithundxr.createnumismatics.Numismatics;
 import dev.ithundxr.createnumismatics.content.backend.BankAccount;
+import dev.ithundxr.createnumismatics.util.Utils;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LevelAccessor;
 
 import java.util.HashMap;
@@ -10,12 +13,34 @@ import java.util.UUID;
 
 public class SubscriptionsBankManager {
     private SubscriptionsBankSavedData savedData;
-    public final Map<UUID, ExtendedBankAccount> extendedAccounts = new HashMap<>();
+    public Map<UUID, ExtendedAccountData> extendedAccounts = new HashMap<>();
+
+    public SubscriptionsBankManager() {
+        cleanUp();
+    }
+
+    private void warnIfClient() {
+        if (Thread.currentThread().getName().equals("Render thread")) {
+            long start = System.currentTimeMillis();
+            Numismatics.LOGGER.error("Bank manager should not be accessed on the client"); // set breakpoint here when developing
+            if (Utils.isDevEnv()) {
+                long end = System.currentTimeMillis();
+                if (end - start < 50) { // crash if breakpoint wasn't set
+                    throw new RuntimeException("Illegal bank access performed on client, please set a breakpoint above");
+                }
+            } else {
+                Numismatics.LOGGER.error("Stacktrace: ", new RuntimeException("Illegal bank access performed on client"));
+            }
+        }
+    }
+
 
     public void levelLoaded(LevelAccessor level) {
         MinecraftServer server = level.getServer();
         if (server == null || server.overworld() != level)
             return;
+        cleanUp();
+        savedData = null;
         loadBankData(server);
     }
 
@@ -23,23 +48,7 @@ public class SubscriptionsBankManager {
         if (savedData != null)
             return;
         savedData = SubscriptionsBankSavedData.load(server);
-        extendedAccounts.clear();
-//        extendedAccounts.putAll(savedData.getAccounts());
-    }
-
-
-    public void markDirty() {
-        if (savedData != null)
-            savedData.setDirty();
-    }
-
-    public ExtendedBankAccount getOrCreate(UUID id) {
-        return extendedAccounts.computeIfAbsent(id, this::createDefaultAccount);
-    }
-
-
-    public ExtendedBankAccount get(UUID uuid) {
-        return extendedAccounts.get(uuid);
+        extendedAccounts = savedData.getAccounts();
     }
 
     public void cleanUp() {
@@ -48,10 +57,26 @@ public class SubscriptionsBankManager {
 
     public void markBankDirty()
     {
+        if(savedData != null)
+            savedData.setDirty();
     }
 
-    private ExtendedBankAccount createDefaultAccount(UUID id) {
-        return new ExtendedBankAccount(id, BankAccount.Type.BLAZE_BANKER);
+
+    public ExtendedAccountData getOrCreate(UUID id) {
+        warnIfClient();
+        if(extendedAccounts.containsKey(id)){
+            return extendedAccounts.get(id);
+        }else{
+            var account = new ExtendedAccountData(id);
+            extendedAccounts.put(id, account);
+            markBankDirty();
+            return account;
+        }
+    }
+
+
+    public ExtendedAccountData get(UUID uuid) {
+        return extendedAccounts.get(uuid);
     }
 
 }

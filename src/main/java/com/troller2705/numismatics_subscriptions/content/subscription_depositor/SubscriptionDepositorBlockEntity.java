@@ -21,6 +21,7 @@ package com.troller2705.numismatics_subscriptions.content.subscription_depositor
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.troller2705.numismatics_subscriptions.AllMenuTypes;
 import com.troller2705.numismatics_subscriptions.NumismaticsSubscriptions;
+import dev.ithundxr.createnumismatics.Numismatics;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceBehaviour;
 import dev.ithundxr.createnumismatics.content.coins.MergingCoinBag;

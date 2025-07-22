@@ -15,11 +15,9 @@ import com.troller2705.numismatics_subscriptions.SubscriptionGuiTextures;
 import com.troller2705.numismatics_subscriptions.SubscriptionIcons;
 import dev.ithundxr.createnumismatics.base.client.rendering.GuiBlockEntityRenderBuilder;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
-import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceConfigurationPacket;
 import dev.ithundxr.createnumismatics.util.TextUtils;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.gui.element.GuiGameElement;
-import net.createmod.catnip.math.AngleHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -46,6 +44,9 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
 
     private final Label[] coinLabels = new Label[COIN_COUNT];
     private final ScrollInput[] coinScrollInputs = new ScrollInput[COIN_COUNT];
+    private Integer[] coinPrices = new Integer[COIN_COUNT];
+    private long interval = 20;
+    private String unit = "";
 
     private List<Rect2i> extraAreas = Collections.emptyList();
 
@@ -61,6 +62,12 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
 
         int x = leftPos;
         int y = topPos;
+
+        interval = menu.contentHolder.getInterval();
+        unit = menu.contentHolder.getUnit();
+        coinPrices = menu.contentHolder.getPrices();
+
+
 
         Consumer<String> onTextChanged = s -> labelBox.setX(nameBoxX(s, labelBox));
         labelBox = new EditBox(new NoShadowFontWrapper(font), x + 23, y + 4, background.width - 20, 10,
@@ -107,7 +114,8 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
                     .writingTo(coinLabels[i])
                     .titled(Component.literal(TextUtils.titleCaseConversion(coin.getName(0))))
                     .calling((value) -> {
-                        menu.contentHolder.setPrice(coin, value);
+                        coinPrices[i] = value;
+//                        menu.contentHolder.setPrice(coin, value);
                         coinLabels[i].setX(baseX + 18 - font.width(coinLabels[i].text) / 2);
                     });
             addRenderableWidget(coinScrollInputs[i]);
@@ -142,12 +150,13 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
                 .writingTo(timeLabel)
                 .titled(Component.literal("Time Increment"))
                 .calling((value) -> {
-//                    menu.contentHolder.setPrice(coin, value);
+                    interval = value;
+//                    menu.contentHolder.setInterval(value);
                     timeLabel.setX(baseX + 18 - font.width(timeLabel.text) / 2);
                 });
         addRenderableWidget(timeScrollInputs);
 
-//        timeScrollInputs.setState(menu.contentHolder.getPrice(coin));
+        timeScrollInputs.setState((int)menu.contentHolder.getInterval());
         timeScrollInputs.onChanged();
 
         final String[] timeOptns= {"Secs","Mins","Hrs"};
@@ -165,6 +174,8 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
                 .writingTo(timeTypeLabel)
                 .titled(Component.literal("Time Unit"))
                 .calling((idx) -> {
+                    unit = timeOptns[idx];
+//                    menu.contentHolder.setUnit(timeOptns[idx]);
 //                    String text = timeOptions[value];
 //                    timeTypeLabel.text = Component.literal(text);
                     timeTypeLabel.setX(baseX2 + 18 - font.width(timeTypeLabel.text) / 2);
@@ -185,7 +196,9 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
         addRenderableWidget(timeTypeScrollInputs);
 
         // Set default state and call update
-        timeTypeScrollInputs.setState(0);
+        var idx = Arrays.asList(timeOptns).indexOf(menu.contentHolder.getUnit());
+        if(idx == -1) idx = 0;
+        timeTypeScrollInputs.setState(idx);
         timeTypeScrollInputs.onChanged();
 
         int baseX3 = baseX + 25;
@@ -316,8 +329,7 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
 
     @Override
     public void removed() {
-        //TODO: Needs new packet to update ExtendedBankAcount.price instead
-        CatnipServices.NETWORK.sendToServer(new SliderStylePriceConfigurationPacket(menu.contentHolder));
+        CatnipServices.NETWORK.sendToServer(new ExtendedBankAccountConfigurationPacket(menu.contentHolder.getBlockPos(), interval, unit, coinPrices));
         super.removed();
         if (labelBox == null)
             return;

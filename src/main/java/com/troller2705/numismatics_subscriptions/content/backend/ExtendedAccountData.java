@@ -4,10 +4,44 @@ import net.minecraft.nbt.CompoundTag;
 
 import java.util.UUID;
 
-public record ExtendedAccountData(UUID id, long interval, String unit, CoinPrice coinPrice) {
+public class ExtendedAccountData {
+
+    public final UUID id;
+    private final CoinPrice coinPrice;
+
+    private long interval;
+    private String unit;
+
 
     public ExtendedAccountData(UUID id) {
         this(id, 20L, "Secs", new CoinPrice());
+    }
+
+    protected ExtendedAccountData(UUID id, long interval, String unit, CoinPrice coinPrice){
+        this.id = id;
+        this.interval = interval;
+        this.unit = unit;
+        this.coinPrice = coinPrice;
+    }
+
+    public long getInterval() {
+        return interval;
+    }
+
+    public void setInterval(long interval) {
+        this.interval = interval;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public CoinPrice getCoinPrice() {
+        return coinPrice;
     }
 
     public CompoundTag save(CompoundTag tag) {

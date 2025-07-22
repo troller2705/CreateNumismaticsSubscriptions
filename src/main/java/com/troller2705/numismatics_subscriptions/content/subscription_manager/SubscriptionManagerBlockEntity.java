@@ -5,6 +5,8 @@ import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.troller2705.numismatics_subscriptions.AllMenuTypes;
+import com.troller2705.numismatics_subscriptions.content.backend.CoinPrice;
+import com.troller2705.numismatics_subscriptions.content.backend.ExtendedAccountData;
 import com.troller2705.numismatics_subscriptions.content.backend.ExtendedBankAccountBehaviour;
 import dev.ithundxr.createnumismatics.Numismatics;
 import dev.ithundxr.createnumismatics.content.backend.BankAccount;
@@ -12,7 +14,7 @@ import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.Trusted;
 import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListContainer;
 import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListHolder;
-import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BlazeBankerScreen;
+import dev.ithundxr.createnumismatics.content.depositor.BrassDepositorBlockEntity;
 import dev.ithundxr.createnumismatics.util.Utils;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.math.AngleHelper;
@@ -38,6 +40,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,7 +58,7 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
     private int clientsideBalance = 0;
 
     // only available on server
-    private int lastSentBalance = 0;
+    private int serversideBalance = 0;
 
     protected ExtendedBankAccountBehaviour bankAccountBehaviour;
 
@@ -93,6 +97,7 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
     }
 
     // copied from Create's Blaze Burner
+    @OnlyIn(Dist.CLIENT)
     private void tickAnimation() {
         boolean active = Minecraft.getInstance().screen instanceof SubscriptionManagerScreen;
 
@@ -154,8 +159,8 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
             onTrustListChanged();
         }
 
-        if (lastSentBalance != getAccount().getBalance()) {
-            lastSentBalance = getAccount().getBalance();
+        if (serversideBalance != getAccount().getBalance()) {
+            serversideBalance = getAccount().getBalance();
             sendData();
         }
     }
@@ -220,9 +225,6 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
         }
         if (getLabel() != null)
             tag.putString("Label", getLabel());
-
-        if (clientPacket && hasAccount())
-            tag.putInt("Balance", getAccount().getBalance());
     }
 
     @Override
@@ -236,11 +238,18 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
             trustListContainer.load(tag.getCompound("TrustListInv"), registries);
         }
 
-        if (clientPacket) {
-            clientsideBalance = tag.getInt("Balance");
-        }
-
         setLabel(tag.getString("Label"));
+    }
+
+    public ExtendedAccountData getExtendedAccount(){
+        if (this.isRemoved()) {
+            Numismatics.LOGGER.error("Tried to get extended account from removed banker!");
+            return null;
+        }
+        if (bankAccountBehaviour == null) {
+            return null;
+        }
+        return bankAccountBehaviour.getExtendedAccount();
     }
 
     public BankAccount getAccount() {
@@ -326,13 +335,50 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
     }
 
     public int getTotalPrice() {
-
-        return bankAccountBehaviour.getAccount().getCoinPrice().getTotalPrice();
+        return bankAccountBehaviour.getTotalPrice();
     }
 
     public int getPrice(Coin coin) {
-        return bankAccountBehaviour.getAccount().getCoinPrice().getPrice(coin);
+        return bankAccountBehaviour.getPrice(coin);
     }
 
-    public void setPrice(Coin coin, int price) { bankAccountBehaviour.getAccount().getCoinPrice().setPrice(coin, price); }
+    public Integer[] getPrices(){
+        return bankAccountBehaviour.getPrices();
+    }
+
+    public void setPrice(Coin coin, int price) {
+
+        if (level != null && !level.isClientSide) {
+            getExtendedAccount().getCoinPrice().setPrice(coin, price);
+        }
+
+        bankAccountBehaviour.setPrice(coin, price);
+
+        notifyUpdate();
+    }
+
+    public long getInterval(){ return bankAccountBehaviour.getInterval(); }
+
+    public void setInterval(long interval) {
+
+        if (level != null && !level.isClientSide) {
+            getExtendedAccount().setInterval(interval);
+        }
+        bankAccountBehaviour.setInterval(interval);
+
+        notifyUpdate();
+    }
+
+    public String getUnit(){ return bankAccountBehaviour.getUnit(); }
+
+    public void setUnit(String unit) {
+
+        if (level != null && !level.isClientSide) {
+            getExtendedAccount().setUnit(unit);
+        }
+        bankAccountBehaviour.setUnit(unit);
+
+        notifyUpdate();
+    }
+
 }
