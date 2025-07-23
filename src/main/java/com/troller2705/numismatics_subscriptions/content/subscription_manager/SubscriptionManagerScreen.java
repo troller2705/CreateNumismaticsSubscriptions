@@ -285,8 +285,8 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
         Couple<Integer> cogsAndSpurs = Coin.COG.convert(menu.contentHolder.getTotalPrice());
         int cogs = cogsAndSpurs.getFirst();
         int spurs = cogsAndSpurs.getSecond();
-        Component balanceLabel = Component.translatable("block.numismatics.brass_depositor.tooltip.price",
-                TextUtils.formatInt(cogs), Coin.COG.getName(cogs), spurs);
+        Component balanceLabel = Component.translatable("block.numismatics_subscriptions.subscription_depositor.tooltip.price",
+                TextUtils.formatInt(cogs), Coin.COG.getName(cogs), spurs, interval, unit);
         graphics.drawCenteredString(font, balanceLabel, x + (background.width - 8) / 2, y + 21, 0xFFFFFF);
     }
 
