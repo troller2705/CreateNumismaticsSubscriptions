@@ -11,6 +11,7 @@ import com.simibubi.create.foundation.gui.widget.Label;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import com.simibubi.create.foundation.gui.widget.SelectionScrollInput;
 import com.troller2705.numismatics_subscriptions.AllBlocks;
+import com.troller2705.numismatics_subscriptions.AllConstants;
 import com.troller2705.numismatics_subscriptions.SubscriptionGuiTextures;
 import com.troller2705.numismatics_subscriptions.SubscriptionIcons;
 import dev.ithundxr.createnumismatics.base.client.rendering.GuiBlockEntityRenderBuilder;
@@ -44,9 +45,11 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
 
     private final Label[] coinLabels = new Label[COIN_COUNT];
     private final ScrollInput[] coinScrollInputs = new ScrollInput[COIN_COUNT];
+
     private Integer[] coinPrices = new Integer[COIN_COUNT];
-    private long interval = 20;
+    private int interval = 20;
     private String unit = "";
+    private String allowedAccountType = "";
 
     private List<Rect2i> extraAreas = Collections.emptyList();
 
@@ -65,6 +68,7 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
 
         interval = menu.contentHolder.getInterval();
         unit = menu.contentHolder.getUnit();
+        allowedAccountType = menu.contentHolder.getAllowedAccountType();
         coinPrices = menu.contentHolder.getPrices();
 
 
@@ -131,15 +135,15 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
 
         // Some example preset ranges for different options
         Map<String, Integer> timeOptionMaxValues = Map.of(
-                "Secs", 61,
-                "Mins", 61,
-                "Hrs", 25
+                AllConstants.Time.SECONDS, 61,
+                AllConstants.Time.MINUTES, 61,
+                AllConstants.Time.HOURS, 25
         );
         // Some example preset ranges for different options
         Map<String, Integer> timeOptionMinValues = Map.of(
-                "Secs", 20,
-                "Mins", 1,
-                "Hrs", 1
+                AllConstants.Time.SECONDS, 20,
+                AllConstants.Time.MINUTES, 1,
+                AllConstants.Time.HOURS, 1
         );
 
         final Label timeLabel = new Label(baseX, baseY + 5, CommonComponents.EMPTY).withShadow();
@@ -156,14 +160,14 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
                 });
         addRenderableWidget(timeScrollInputs);
 
-        timeScrollInputs.setState((int)menu.contentHolder.getInterval());
+        timeScrollInputs.setState(menu.contentHolder.getInterval());
         timeScrollInputs.onChanged();
 
-        final String[] timeOptns= {"Secs","Mins","Hrs"};
+        final String[] timeOptns= {AllConstants.Time.SECONDS, AllConstants.Time.MINUTES, AllConstants.Time.HOURS};
         final List<Component> timeOptions = Arrays.asList(
-                Component.literal("Secs"),
-                Component.literal("Mins"),
-                Component.literal("Hrs")
+                Component.literal(AllConstants.Time.SECONDS),
+                Component.literal(AllConstants.Time.MINUTES),
+                Component.literal(AllConstants.Time.HOURS)
         );
 
         final Label timeTypeLabel = new Label(baseX2, baseY + 5, CommonComponents.EMPTY).withShadow();
@@ -196,17 +200,20 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
         addRenderableWidget(timeTypeScrollInputs);
 
         // Set default state and call update
-        var idx = Arrays.asList(timeOptns).indexOf(menu.contentHolder.getUnit());
-        if(idx == -1) idx = 0;
-        timeTypeScrollInputs.setState(idx);
+        var timeTypeIdx = Arrays.asList(timeOptns).indexOf(menu.contentHolder.getUnit());
+        if(timeTypeIdx == -1) timeTypeIdx = 0;
+        timeTypeScrollInputs.setState(timeTypeIdx);
         timeTypeScrollInputs.onChanged();
 
         int baseX3 = baseX + 25;
         int baseY2 = y + background.height - 19;
 
+
+        final String[] accountOptns = { AllConstants.AccountType.ALL, AllConstants.AccountType.BANK, AllConstants.AccountType.PRIVATE };
         final List<Component> accountOptions = Arrays.asList(
-                Component.literal("Joint"),
-                Component.literal("Single")
+                Component.literal(AllConstants.AccountType.ALL),
+                Component.literal(AllConstants.AccountType.BANK),
+                Component.literal(AllConstants.AccountType.PRIVATE)
         );
 
         final Label accountTypeLabel = new Label(baseX3, baseY2, CommonComponents.EMPTY).withShadow();
@@ -217,6 +224,7 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
                 .writingTo(accountTypeLabel)
                 .titled(Component.literal("Accepted Account Type"))
                 .calling((value) -> {
+                    allowedAccountType = accountOptns[value];
 //                    String text = accountOptions[value];
 //                    accountTypeLabel.text = Component.literal(text);
                     accountTypeLabel.setX(baseX3 + 18 - font.width(accountTypeLabel.text) / 2);
@@ -224,7 +232,9 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
         addRenderableWidget(accountTypeScrollInputs);
 
         // Set default state and call update
-        accountTypeScrollInputs.setState(0);
+        var accountTypeIdx = Arrays.asList(accountOptns).indexOf(menu.contentHolder.getAllowedAccountType());
+        if(accountTypeIdx == -1) accountTypeIdx = 0;
+        accountTypeScrollInputs.setState(accountTypeIdx);
         accountTypeScrollInputs.onChanged();
 
         extraAreas = ImmutableList.of(new Rect2i(x + background.width, y + background.height - 68, 84, 84));
@@ -329,7 +339,7 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
 
     @Override
     public void removed() {
-        CatnipServices.NETWORK.sendToServer(new ExtendedBankAccountConfigurationPacket(menu.contentHolder.getBlockPos(), interval, unit, coinPrices));
+        CatnipServices.NETWORK.sendToServer(new ExtendedBankAccountConfigurationPacket(menu.contentHolder.getBlockPos(), interval, unit, allowedAccountType, coinPrices));
         super.removed();
         if (labelBox == null)
             return;

@@ -357,9 +357,9 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
         notifyUpdate();
     }
 
-    public long getInterval(){ return bankAccountBehaviour.getInterval(); }
+    public int getInterval(){ return bankAccountBehaviour.getInterval(); }
 
-    public void setInterval(long interval) {
+    public void setInterval(int interval) {
 
         if (level != null && !level.isClientSide) {
             getExtendedAccount().setInterval(interval);
@@ -377,6 +377,18 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
             getExtendedAccount().setUnit(unit);
         }
         bankAccountBehaviour.setUnit(unit);
+
+        notifyUpdate();
+    }
+
+    public String getAllowedAccountType(){ return bankAccountBehaviour.getAllowedAccountType(); }
+
+    public void setAllowedAccountType(String allowedAccountType) {
+
+        if (level != null && !level.isClientSide) {
+            getExtendedAccount().setAllowedAccountType(allowedAccountType);
+        }
+        bankAccountBehaviour.setAllowedAccountType(allowedAccountType);
 
         notifyUpdate();
     }

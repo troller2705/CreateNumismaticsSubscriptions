@@ -6,7 +6,6 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.troller2705.numismatics_subscriptions.SubscriptionPackets;
 import com.troller2705.numismatics_subscriptions.content.backend.ExtendedBankAccountBehaviour;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
-import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceConfigurationPacket;
 import dev.ithundxr.createnumismatics.registry.packets.BlockEntityBehaviourConfigurationPacket;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.minecraft.core.BlockPos;
@@ -19,22 +18,24 @@ public class ExtendedBankAccountConfigurationPacket extends BlockEntityBehaviour
 
     public static final StreamCodec<FriendlyByteBuf, ExtendedBankAccountConfigurationPacket> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, i -> i.pos,
-            ByteBufCodecs.VAR_LONG, i -> i.interval,
+            ByteBufCodecs.INT, i -> i.interval,
             CatnipStreamCodecBuilders.nullable(ByteBufCodecs.STRING_UTF8), i -> i.unit,
+            CatnipStreamCodecBuilders.nullable(ByteBufCodecs.STRING_UTF8), i -> i.allowedAccountType,
             CatnipStreamCodecBuilders.array(ByteBufCodecs.INT, Integer.class), i -> i.coinPrices,
             ExtendedBankAccountConfigurationPacket::new
     );
 
-    private final long interval;
+    private final int interval;
     private final String unit;
+    private final String allowedAccountType;
     private final Integer[] coinPrices;
-    //TODO: AccountType
 
 
-    public ExtendedBankAccountConfigurationPacket(BlockPos pos, long interval, String unit, Integer[] coinPrices) {
+    public ExtendedBankAccountConfigurationPacket(BlockPos pos, int interval, String unit, String allowedAccountType, Integer[] coinPrices) {
         super(pos);
         this.interval = interval;
         this.unit = unit;
+        this.allowedAccountType = allowedAccountType;
         this.coinPrices = coinPrices;
     }
 
@@ -45,6 +46,7 @@ public class ExtendedBankAccountConfigurationPacket extends BlockEntityBehaviour
         ExtendedBankAccountBehaviour extBankBehaviour = BlockEntityBehaviour.get(be, getType());
         this.interval = extBankBehaviour.getInterval();
         this.unit = extBankBehaviour.getUnit();
+        this.allowedAccountType = extBankBehaviour.getAllowedAccountType();
         for (Coin coin : Coin.values()) {
             this.coinPrices[coin.ordinal()] = extBankBehaviour.getPrice(coin);
         }
@@ -59,6 +61,7 @@ public class ExtendedBankAccountConfigurationPacket extends BlockEntityBehaviour
     protected void applySettings(ServerPlayer player, ExtendedBankAccountBehaviour behaviour) {
         behaviour.setInterval(interval);
         behaviour.setUnit(unit);
+        behaviour.setAllowedAccountType(allowedAccountType);
         for (Coin coin : Coin.values()) {
             behaviour.setPrice(coin, coinPrices[coin.ordinal()]);
         }

@@ -2,10 +2,10 @@ package com.troller2705.numismatics_subscriptions.content.backend;
 
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType;
+import com.troller2705.numismatics_subscriptions.AllConstants;
 import com.troller2705.numismatics_subscriptions.NumismaticsSubscriptions;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BankAccountBehaviour;
-import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BlazeBankerEditPacket;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -17,8 +17,9 @@ public class ExtendedBankAccountBehaviour extends BankAccountBehaviour {
 
     public static final BehaviourType<ExtendedBankAccountBehaviour> TYPE = new BehaviourType<>();
 
-    protected long interval;
+    protected int interval;
     protected String unit;
+    protected String allowedAccountType;
     protected final EnumMap<Coin, Integer> prices = new EnumMap<>(Coin.class);
 
 
@@ -50,9 +51,12 @@ public class ExtendedBankAccountBehaviour extends BankAccountBehaviour {
     public void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
 
-        tag.putLong("Interval", interval);
-        if(unit == null) unit = "";
+        tag.putInt("Interval", interval);
+        if(unit == null) unit = AllConstants.Time.HOURS;
         tag.putString("Unit", unit);
+
+        if(allowedAccountType == null) allowedAccountType = AllConstants.AccountType.ALL;
+        tag.putString("AllowedAccountType", allowedAccountType);
 
         CompoundTag priceTag = new CompoundTag();
         for (Coin coin : Coin.values()) {
@@ -65,8 +69,9 @@ public class ExtendedBankAccountBehaviour extends BankAccountBehaviour {
     public void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
 
-        this.interval = tag.getLong("Interval");
+        this.interval = tag.getInt("Interval");
         this.unit = tag.getString("Unit");
+        this.allowedAccountType = tag.getString("AllowedAccountType");
 
         this.prices.clear();
         if (tag.contains("Prices", Tag.TAG_COMPOUND)) {
@@ -112,11 +117,11 @@ public class ExtendedBankAccountBehaviour extends BankAccountBehaviour {
         calculateTotalPrice();
     }
 
-    public long getInterval() {
+    public int getInterval() {
         return interval;
     }
 
-    public void setInterval(long interval) {
+    public void setInterval(int interval) {
         this.interval = interval;
     }
 
@@ -126,5 +131,13 @@ public class ExtendedBankAccountBehaviour extends BankAccountBehaviour {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public String getAllowedAccountType() {
+        return allowedAccountType;
+    }
+
+    public void setAllowedAccountType(String allowedAccountType) {
+        this.allowedAccountType = allowedAccountType;
     }
 }
