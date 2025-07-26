@@ -18,9 +18,12 @@
 
 package com.troller2705.numismatics_subscriptions.content.subscription_depositor;
 
+import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.troller2705.numismatics_subscriptions.AllMenuTypes;
 import com.troller2705.numismatics_subscriptions.NumismaticsSubscriptions;
+import com.troller2705.numismatics_subscriptions.content.backend.ExtendedAccountData;
+import com.troller2705.numismatics_subscriptions.content.backend.ExtendedBankAccountBehaviour;
 import dev.ithundxr.createnumismatics.Numismatics;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceBehaviour;
@@ -43,29 +46,52 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.UUID;
 
 
 public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEntity implements MenuProvider {
 
-    private SliderStylePriceBehaviour price;
+    // only available on client
+    private int clientsideBalance = 0;
+
+    // only available on server
+    private int serversideBalance = 0;
+
+    protected ExtendedBankAccountBehaviour bankAccountBehaviour;
+
+    @Nullable
+    protected UUID owner;
 
     public SubscriptionDepositorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
-    @Override
-    public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        price = new SliderStylePriceBehaviour(this, this::addCoin, this::getCoinCount);
-        behaviours.add(price);
+    public ExtendedAccountData getExtendedAccount(){
+        if (this.isRemoved()) {
+            Numismatics.LOGGER.error("Tried to get extended account from removed banker!");
+            return null;
+        }
+        if (bankAccountBehaviour == null) {
+            return null;
+        }
+        return bankAccountBehaviour.getExtendedAccount();
     }
 
-    public int getCoinCount(Coin coin) {
-        return this.inventory.getDiscrete(coin);
+    @Override
+    public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+
     }
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Component.translatable("block.numismatics_subscriptions.subscription_depositor");
+        if (bankAccountBehaviour.hasAccount())
+        {
+            return Component.literal("Account");
+        }
+        else
+        {
+            return Component.translatable("block.numismatics_subscriptions.subscription_depositor");
+        }
     }
 
     @Nullable
@@ -77,51 +103,30 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
     }
 
     public int getTotalPrice() {
-        return price.getTotalPrice();
+        return bankAccountBehaviour.getTotalPrice();
     }
 
-    public int getPrice(Coin coin) {
-        return price.getPrice(coin);
-    }
+    public int getInterval(){ return bankAccountBehaviour.getInterval(); }
 
-    public void setPrice(Coin coin, int price) {
-        this.price.setPrice(coin, price);
-    }
+    public String getUnit(){ return bankAccountBehaviour.getUnit(); }
 
-    public void addCoins(int totalPrice) {
-        MergingCoinBag coinBag = new MergingCoinBag(totalPrice);
-
-        for (int i = Coin.values().length - 1; i >= 0; i--) {
-            Coin coin = Coin.values()[i];
-            int count = coinBag.get(coin).getFirst();
-            if (count > 0) {
-                coinBag.subtract(coin, count);
-                addCoin(coin, count);
-            }
-        }
-    }
+    public String getAllowedAccountType(){ return bankAccountBehaviour.getAllowedAccountType(); }
 
     @Override
     public boolean addToTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        Couple<Integer> cogsAndSpurs = Coin.COG.convert(price.getTotalPrice());
+        Couple<Integer> cogsAndSpurs = Coin.COG.convert(getTotalPrice());
         int cogs = cogsAndSpurs.getFirst();
         int spurs = cogsAndSpurs.getSecond();
         MutableComponent balanceLabel = Component.translatable("block.numismatics_subscriptions.subscription_depositor.tooltip.price",
-                TextUtils.formatInt(cogs), Coin.COG.getName(cogs), spurs, "500", "Secs");
+                TextUtils.formatInt(cogs), Coin.COG.getName(cogs), spurs, getInterval(), getUnit());
         Lang.builder(NumismaticsSubscriptions.MODID)
-                .add(balanceLabel.withStyle(Coin.closest(price.getTotalPrice()).rarity.color()))
+                .add(balanceLabel.withStyle(Coin.closest(getTotalPrice()).rarity.color()))
                 .forGoggles(tooltip);
 
-        for (MutableComponent component : price.getCondensedPriceBreakdown()) {
-            Lang.builder(NumismaticsSubscriptions.MODID)
-                    .add(component)
-                    .forGoggles(tooltip);
-        }
         return true;
     }
 
+
     @Override
-    public void openTrustListMenu(ServerPlayer player) {
-        //TrustListMenu.openMenu(this, player, AllMenuTypes.SUBSCRIPTION_DEPOSITOR.asStack());
-    }
+    public void openTrustListMenu(ServerPlayer player) {}
 }

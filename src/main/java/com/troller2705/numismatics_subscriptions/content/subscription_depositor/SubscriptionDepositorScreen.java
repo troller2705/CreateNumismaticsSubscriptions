@@ -88,13 +88,7 @@ public class SubscriptionDepositorScreen extends AbstractSimiContainerScreen<Sub
         int cogs = cogsAndSpurs.getFirst();
         int spurs = cogsAndSpurs.getSecond();
         Component balanceLabel = Component.translatable("block.numismatics_subscriptions.subscription_depositor.tooltip.price",
-                TextUtils.formatInt(cogs), Coin.COG.getName(cogs), spurs, "500", "Secs");
+                TextUtils.formatInt(cogs), Coin.COG.getName(cogs), spurs, menu.contentHolder.getInterval(), menu.contentHolder.getUnit());
         graphics.drawCenteredString(font, balanceLabel, x + (background.width - 8) / 2, y + 21, 0xFFFFFF);
-    }
-
-    @Override
-    public void removed() {
-        CatnipServices.NETWORK.sendToServer(new SliderStylePriceConfigurationPacket(menu.contentHolder));
-        super.removed();
     }
 }
