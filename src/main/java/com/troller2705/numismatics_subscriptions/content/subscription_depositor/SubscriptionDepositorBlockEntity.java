@@ -27,6 +27,7 @@ import com.troller2705.numismatics_subscriptions.content.backend.ExtendedBankAcc
 import dev.ithundxr.createnumismatics.Numismatics;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceBehaviour;
+import dev.ithundxr.createnumismatics.content.bank.CardItem;
 import dev.ithundxr.createnumismatics.content.coins.MergingCoinBag;
 import dev.ithundxr.createnumismatics.content.depositor.AbstractDepositorBlockEntity;
 import dev.ithundxr.createnumismatics.util.TextUtils;
@@ -40,6 +41,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
@@ -57,24 +59,11 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
     // only available on server
     private int serversideBalance = 0;
 
-    protected ExtendedBankAccountBehaviour bankAccountBehaviour;
-
     @Nullable
     protected UUID owner;
 
     public SubscriptionDepositorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-    }
-
-    public ExtendedAccountData getExtendedAccount(){
-        if (this.isRemoved()) {
-            Numismatics.LOGGER.error("Tried to get extended account from removed banker!");
-            return null;
-        }
-        if (bankAccountBehaviour == null) {
-            return null;
-        }
-        return bankAccountBehaviour.getExtendedAccount();
     }
 
     @Override
@@ -84,9 +73,12 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
 
     @Override
     public @NotNull Component getDisplayName() {
-        if (bankAccountBehaviour.hasAccount())
+        if (!cardContainer.getItem(0).isEmpty())
         {
-            return Component.literal("Account");
+            ItemStack card = cardContainer.getItem(0);
+            String name = CardItem.getPlayerName(card);
+            assert name != null;
+            return Component.literal(name);
         }
         else
         {
@@ -103,14 +95,14 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
     }
 
     public int getTotalPrice() {
-        return bankAccountBehaviour.getTotalPrice();
+        return 0;
     }
 
-    public int getInterval(){ return bankAccountBehaviour.getInterval(); }
+    public int getInterval(){ return 0; }
 
-    public String getUnit(){ return bankAccountBehaviour.getUnit(); }
+    public String getUnit(){ return ""; }
 
-    public String getAllowedAccountType(){ return bankAccountBehaviour.getAllowedAccountType(); }
+    public String getAllowedAccountType(){ return ""; }
 
     @Override
     public boolean addToTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
