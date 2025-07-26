@@ -53,6 +53,8 @@ public class SubscriptionDepositorScreen extends AbstractSimiContainerScreen<Sub
         int x = leftPos;
         int y = topPos;
 
+        menu.contentHolder.getPrices();
+
         IconButton confirmButton = new IconButton(x + background.width - 33, y + background.height - 24, AllIcons.I_CONFIRM);
         confirmButton.withCallback(this::onClose);
         addRenderableWidget(confirmButton);

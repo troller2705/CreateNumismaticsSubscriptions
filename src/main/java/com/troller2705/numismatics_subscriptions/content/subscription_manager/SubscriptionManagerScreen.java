@@ -334,16 +334,19 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
     }
 
     private void setLabel(String label) {
-        CatnipServices.NETWORK.sendToServer(new SubscriptionManagerEditPacket(menu.contentHolder.getBlockPos(), label));
+        CatnipServices.NETWORK.sendToServer(new SubscriptionManagerEditPacket(menu.contentHolder.getBlockPos(), label, interval, unit, allowedAccountType, coinPrices));
     }
 
     @Override
+    public void onClose() {
+        CatnipServices.NETWORK.sendToServer(new SubscriptionManagerEditPacket(menu.contentHolder.getBlockPos(), labelBox.getValue(), interval, unit, allowedAccountType, coinPrices));
+        super.onClose();
+    }
+
+    //TODO: Remove
+    @Override
     public void removed() {
-        CatnipServices.NETWORK.sendToServer(new ExtendedBankAccountConfigurationPacket(menu.contentHolder.getBlockPos(), interval, unit, allowedAccountType, coinPrices));
         super.removed();
-        if (labelBox == null)
-            return;
-        syncName();
     }
 
     private int nameBoxX(String s, EditBox nameBox) {

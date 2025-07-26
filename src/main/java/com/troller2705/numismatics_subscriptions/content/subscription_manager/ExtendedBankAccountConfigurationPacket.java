@@ -14,6 +14,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 
+@Deprecated()
 public class ExtendedBankAccountConfigurationPacket extends BlockEntityBehaviourConfigurationPacket<ExtendedBankAccountBehaviour> {
 
     public static final StreamCodec<FriendlyByteBuf, ExtendedBankAccountConfigurationPacket> STREAM_CODEC = StreamCodec.composite(

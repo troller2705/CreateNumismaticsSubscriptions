@@ -69,21 +69,20 @@ public class ExtendedBankAccountBehaviour extends BankAccountBehaviour {
     public void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
 
-        this.interval = tag.getInt("Interval");
-        this.unit = tag.getString("Unit");
-        this.allowedAccountType = tag.getString("AllowedAccountType");
+        setInterval(tag.getInt("Interval"));
+        setUnit(tag.getString("Unit"));
+        setAllowedAccountType(tag.getString("AllowedAccountType"));
 
         this.prices.clear();
         if (tag.contains("Prices", Tag.TAG_COMPOUND)) {
             CompoundTag priceTag = tag.getCompound("Prices");
             for (Coin coin : Coin.values()) {
                 if (priceTag.contains(coin.getName(), Tag.TAG_INT)) {
-                    int count = priceTag.getInt(coin.getName());
-                    if (count > 0)
-                        setPrice(coin, count);
+                    setPrice(coin, priceTag.getInt(coin.getName()));
                 }
             }
         }
+
         calculateTotalPrice();
     }
 

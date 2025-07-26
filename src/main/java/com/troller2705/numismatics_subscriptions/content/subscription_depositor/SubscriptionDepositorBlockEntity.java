@@ -27,7 +27,9 @@ import com.troller2705.numismatics_subscriptions.content.backend.ExtendedBankAcc
 import dev.ithundxr.createnumismatics.Numismatics;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceBehaviour;
+import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListScreen;
 import dev.ithundxr.createnumismatics.content.bank.CardItem;
+import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BlazeBankerScreen;
 import dev.ithundxr.createnumismatics.content.coins.MergingCoinBag;
 import dev.ithundxr.createnumismatics.content.depositor.AbstractDepositorBlockEntity;
 import dev.ithundxr.createnumismatics.util.TextUtils;
@@ -53,11 +55,7 @@ import java.util.UUID;
 
 public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEntity implements MenuProvider {
 
-    // only available on client
-    private int clientsideBalance = 0;
-
-    // only available on server
-    private int serversideBalance = 0;
+    private SubscriptionBehaviour subscription;
 
     @Nullable
     protected UUID owner;
@@ -68,7 +66,8 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-
+        subscription = new SubscriptionBehaviour(this, this::getCardId);
+        behaviours.add(subscription);
     }
 
     @Override
@@ -94,15 +93,21 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
         return new SubscriptionDepositorMenu(AllMenuTypes.SUBSCRIPTION_DEPOSITOR.get(), i, inventory, this);
     }
 
-    public int getTotalPrice() {
-        return 0;
+    public ExtendedAccountData getExtendedAccount(){
+        if(subscription == null) return null;
+
+        return subscription.getExtendedAccount();
     }
 
-    public int getInterval(){ return 0; }
+    public Integer[] getPrices() { return subscription.getPrices(); }
 
-    public String getUnit(){ return ""; }
+    public int getTotalPrice() { return subscription.getTotalPrice(); }
 
-    public String getAllowedAccountType(){ return ""; }
+    public int getInterval(){ return subscription.getInterval(); }
+
+    public String getUnit(){ return subscription.getUnit(); }
+
+    public String getAllowedAccountType(){ return subscription.getAllowedAccountType(); }
 
     @Override
     public boolean addToTooltip(List<Component> tooltip, boolean isPlayerSneaking) {

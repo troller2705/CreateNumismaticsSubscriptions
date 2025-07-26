@@ -14,6 +14,7 @@ import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.Trusted;
 import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListContainer;
 import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListHolder;
+import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BlazeBankerBlockEntity;
 import dev.ithundxr.createnumismatics.content.depositor.BrassDepositorBlockEntity;
 import dev.ithundxr.createnumismatics.util.Utils;
 import net.createmod.catnip.animation.LerpedFloat;
@@ -154,6 +155,8 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
             delayedDataSync = false;
             sendData();
         }
+
+        var _extAcc = getExtendedAccount();
 
         if (owner != null && !getAccount().isAuthorized(owner)) {
             onTrustListChanged();

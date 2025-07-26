@@ -2,10 +2,15 @@ package com.troller2705.numismatics_subscriptions.content.backend;
 
 import com.troller2705.numismatics_subscriptions.AllConstants;
 import net.minecraft.nbt.CompoundTag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 public class ExtendedAccountData {
+
+    @Nullable
+    private Runnable onDirty;
 
     public final UUID id;
     private final CoinPrice coinPrice;
@@ -27,12 +32,18 @@ public class ExtendedAccountData {
         this.coinPrice = coinPrice;
     }
 
+    public void setOnDirty(@NotNull Runnable onDirty){
+        this.onDirty = onDirty;
+    }
+
+
     public int getInterval() {
         return interval;
     }
 
     public void setInterval(int interval) {
         this.interval = interval;
+        if(onDirty != null) onDirty.run();
     }
 
     public String getUnit() {
@@ -41,6 +52,7 @@ public class ExtendedAccountData {
 
     public void setUnit(String unit) {
         this.unit = unit;
+        if(onDirty != null) onDirty.run();
     }
 
     public String getAllowedAccountType() {
@@ -49,6 +61,7 @@ public class ExtendedAccountData {
 
     public void setAllowedAccountType(String allowedAccountType) {
         this.allowedAccountType = allowedAccountType;
+        if(onDirty != null) onDirty.run();
     }
 
     public CoinPrice getCoinPrice() {

@@ -44,10 +44,17 @@ public class SubscriptionsBankManager {
         loadBankData(server);
     }
 
+    private void onBankAccountDirty(){
+        markBankDirty();
+    }
+
     public void loadBankData(MinecraftServer server) {
         if (savedData != null)
             return;
         savedData = SubscriptionsBankSavedData.load(server);
+        savedData.getAccounts().forEach((uuid, extendedAccountData) -> {
+            extendedAccountData.setOnDirty(this::onBankAccountDirty);
+        });
         extendedAccounts = savedData.getAccounts();
     }
 
@@ -61,13 +68,13 @@ public class SubscriptionsBankManager {
             savedData.setDirty();
     }
 
-
     public ExtendedAccountData getOrCreate(UUID id) {
         warnIfClient();
         if(extendedAccounts.containsKey(id)){
             return extendedAccounts.get(id);
         }else{
             var account = new ExtendedAccountData(id);
+            account.setOnDirty(this::onBankAccountDirty);
             extendedAccounts.put(id, account);
             markBankDirty();
             return account;
