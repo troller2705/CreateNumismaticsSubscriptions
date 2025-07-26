@@ -17,11 +17,8 @@ import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.Trusted;
 import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListContainer;
 import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListHolder;
-<<<<<<< Updated upstream
 import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BlazeBankerBlockEntity;
-=======
 import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListMenu;
->>>>>>> Stashed changes
 import dev.ithundxr.createnumismatics.content.depositor.BrassDepositorBlockEntity;
 import dev.ithundxr.createnumismatics.registry.NumismaticsBlocks;
 import dev.ithundxr.createnumismatics.registry.packets.OpenTrustListPacket;
@@ -60,7 +57,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements Trusted, TrustListHolder, MenuProvider {
 public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements Trusted, TrustListHolder, SubsListHolder, MenuProvider {
 
     protected LerpedFloat headAnimation;
