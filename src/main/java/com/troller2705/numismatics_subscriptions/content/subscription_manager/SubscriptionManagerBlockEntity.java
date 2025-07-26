@@ -5,21 +5,31 @@ import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.troller2705.numismatics_subscriptions.AllMenuTypes;
+import com.troller2705.numismatics_subscriptions.OpenSubsListPacket;
 import com.troller2705.numismatics_subscriptions.content.backend.CoinPrice;
 import com.troller2705.numismatics_subscriptions.content.backend.ExtendedAccountData;
 import com.troller2705.numismatics_subscriptions.content.backend.ExtendedBankAccountBehaviour;
+import com.troller2705.numismatics_subscriptions.content.subscription_manager.subs_list.SubsListHolder;
+import com.troller2705.numismatics_subscriptions.content.subscription_manager.subs_list.SubsListMenu;
 import dev.ithundxr.createnumismatics.Numismatics;
 import dev.ithundxr.createnumismatics.content.backend.BankAccount;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.backend.Trusted;
 import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListContainer;
 import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListHolder;
+<<<<<<< Updated upstream
 import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BlazeBankerBlockEntity;
+=======
+import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListMenu;
+>>>>>>> Stashed changes
 import dev.ithundxr.createnumismatics.content.depositor.BrassDepositorBlockEntity;
+import dev.ithundxr.createnumismatics.registry.NumismaticsBlocks;
+import dev.ithundxr.createnumismatics.registry.packets.OpenTrustListPacket;
 import dev.ithundxr.createnumismatics.util.Utils;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.math.AngleHelper;
 import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -51,6 +61,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements Trusted, TrustListHolder, MenuProvider {
+public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements Trusted, TrustListHolder, SubsListHolder, MenuProvider {
 
     protected LerpedFloat headAnimation;
     protected LerpedFloat headAngle;
@@ -327,8 +338,7 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
         return clientsideBalance;
     }
 
-    @Override
-    public void openTrustListMenu(ServerPlayer player) {
+    public void openMenu(ServerPlayer player) {
         if (!isTrusted(player)) {
             return;
         }
@@ -396,4 +406,25 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
         notifyUpdate();
     }
 
+    public void openTrustList()
+    {
+        if (level == null || !level.isClientSide)
+            return;
+        CatnipServices.NETWORK.sendToServer(new OpenTrustListPacket<>(getBlockPos()));
+    }
+
+    public void openSubsList()
+    {
+        if (level == null || !level.isClientSide)
+            return;
+        CatnipServices.NETWORK.sendToServer(new OpenSubsListPacket<>(getBlockPos()));
+    }
+
+    public void openTrustListMenu(ServerPlayer player) {
+        TrustListMenu.openMenu(this, player, NumismaticsBlocks.BRASS_DEPOSITOR.asStack());
+    }
+
+    public void openSubsListMenu(ServerPlayer player) {
+        SubsListMenu.openMenu(this, player, NumismaticsBlocks.BRASS_DEPOSITOR.asStack());
+    }
 }

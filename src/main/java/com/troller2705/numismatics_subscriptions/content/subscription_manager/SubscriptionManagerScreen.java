@@ -20,13 +20,17 @@ import dev.ithundxr.createnumismatics.util.TextUtils;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.gui.element.GuiGameElement;
 import net.createmod.catnip.platform.CatnipServices;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.attachment.AttachmentHolder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -88,13 +92,13 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
 
         IconButton trustListButton = new IconButton(x + 7, y + background.height - 24, AllIcons.I_VIEW_SCHEDULE);
         trustListButton.withCallback(() -> {
-//            menu.contentHolder.openTrustList();
+            menu.contentHolder.openTrustList();
         });
         addRenderableWidget(trustListButton);
 
         IconButton subsListButton = new IconButton(x + 29, y + background.height - 24, SubscriptionIcons.I_SUBS);
         subsListButton.withCallback(() -> {
-//            menu.contentHolder.openTrustList();
+            menu.contentHolder.openSubsList();
         });
         addRenderableWidget(subsListButton);
 

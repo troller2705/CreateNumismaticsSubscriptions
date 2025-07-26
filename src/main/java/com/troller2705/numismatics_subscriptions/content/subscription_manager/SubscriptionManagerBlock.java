@@ -91,7 +91,7 @@ public class SubscriptionManagerBlock extends Block implements IWrenchable, IBE<
 
         if (isTrusted(player, level, pos)) {
             withBlockEntityDo(level, pos,
-                    be -> be.openTrustListMenu((ServerPlayer) player));
+                    be -> be.openMenu((ServerPlayer) player));
             return InteractionResult.SUCCESS;
         }
 

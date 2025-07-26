@@ -2,6 +2,7 @@ package com.troller2705.numismatics_subscriptions;
 
 import com.troller2705.numismatics_subscriptions.content.subscription_manager.ExtendedBankAccountConfigurationPacket;
 import com.troller2705.numismatics_subscriptions.content.subscription_manager.SubscriptionManagerEditPacket;
+import dev.ithundxr.createnumismatics.registry.packets.OpenTrustListPacket;
 import net.createmod.catnip.net.base.BasePacketPayload;
 import net.createmod.catnip.net.base.CatnipPacketRegistry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -13,6 +14,7 @@ import java.util.Locale;
 public enum SubscriptionPackets implements BasePacketPayload.PacketTypeProvider
 {
     SUBSCRIPTION_MANAGER_EDIT(SubscriptionManagerEditPacket.class, SubscriptionManagerEditPacket.STREAM_CODEC),
+    OPEN_SUBS_LIST(OpenSubsListPacket.class, OpenSubsListPacket.STREAM_CODEC),
     EXTENDED_BANK_ACCOUNT_CONFIGURATION(ExtendedBankAccountConfigurationPacket.class, ExtendedBankAccountConfigurationPacket.STREAM_CODEC);
 
     private final CatnipPacketRegistry.PacketType<?> type;

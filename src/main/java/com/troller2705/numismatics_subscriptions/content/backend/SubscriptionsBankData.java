@@ -14,6 +14,7 @@ import java.util.UUID;
 public class SubscriptionsBankData extends SavedData
 {
     private final Map<UUID, ExtendedAccountData> extendedAccounts = new HashMap<>();
+    private final Map<UUID, Boolean> subscribers = new HashMap<>();
 
     public static SubscriptionsBankData load(CompoundTag tag, HolderLookup.Provider provider) {
         var data = new SubscriptionsBankData();
@@ -22,6 +23,13 @@ public class SubscriptionsBankData extends SavedData
             CompoundTag accTag = (CompoundTag) t;
             ExtendedAccountData account = ExtendedAccountData.load(accTag);
             data.extendedAccounts.put(account.id, account);
+        }
+        ListTag list = tag.getList("Subscribers", Tag.TAG_COMPOUND);
+        for (Tag t : list) {
+            CompoundTag entry = (CompoundTag) t;
+            UUID uuid = entry.getUUID("UUID");
+            boolean valid = entry.getBoolean("Valid");
+            data.subscribers.put(uuid, valid);
         }
         return data;
     }
@@ -33,6 +41,15 @@ public class SubscriptionsBankData extends SavedData
             accounts.add(account.save(new CompoundTag()));
         }
         tag.put("ExtendedAccounts", accounts);
+
+        ListTag list = new ListTag();
+        for (Map.Entry<UUID, Boolean> entry : subscribers.entrySet()) {
+            CompoundTag t = new CompoundTag();
+            t.putUUID("UUID", entry.getKey());
+            t.putBoolean("Valid", entry.getValue());
+            list.add(t);
+        }
+        tag.put("Subscribers", list);
         return tag;
     }
 
@@ -42,6 +59,10 @@ public class SubscriptionsBankData extends SavedData
 
     public static SubscriptionsBankData get(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(factory(), "numismatics_subscriptions_bank");
+    }
+
+    public Map<UUID, Boolean> getAll() {
+        return subscribers;
     }
 
     public ExtendedAccountData getOrCreate(UUID id) {

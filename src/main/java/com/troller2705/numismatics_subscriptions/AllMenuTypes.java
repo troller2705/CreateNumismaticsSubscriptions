@@ -4,6 +4,8 @@ import com.troller2705.numismatics_subscriptions.content.subscription_depositor.
 import com.troller2705.numismatics_subscriptions.content.subscription_depositor.SubscriptionDepositorScreen;
 import com.troller2705.numismatics_subscriptions.content.subscription_manager.SubscriptionManagerMenu;
 import com.troller2705.numismatics_subscriptions.content.subscription_manager.SubscriptionManagerScreen;
+import com.troller2705.numismatics_subscriptions.content.subscription_manager.subs_list.SubsListMenu;
+import com.troller2705.numismatics_subscriptions.content.subscription_manager.subs_list.SubsListScreen;
 import com.tterrag.registrate.builders.MenuBuilder;
 import com.tterrag.registrate.util.entry.MenuEntry;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
@@ -24,6 +26,12 @@ public class AllMenuTypes
             "subscription_depositor",
             SubscriptionDepositorMenu::new,
             () -> SubscriptionDepositorScreen::new
+    );
+
+    public static final MenuEntry<SubsListMenu> SUBS_LIST = register(
+            "subscriber_list",
+            SubsListMenu::new,
+            () -> SubsListScreen::new
     );
 
     private static <C extends AbstractContainerMenu, S extends Screen & MenuAccess<C>> MenuEntry<C> register(
