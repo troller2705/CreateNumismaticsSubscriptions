@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.troller2705.numismatics_subscriptions.AllBlocks;
 import com.troller2705.numismatics_subscriptions.AllMenuTypes;
 import com.troller2705.numismatics_subscriptions.content.subscription_manager.subs_list.OpenSubsListPacket;
 import com.troller2705.numismatics_subscriptions.content.backend.ExtendedAccountData;
@@ -414,10 +415,10 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
     }
 
     public void openTrustListMenu(ServerPlayer player) {
-        TrustListMenu.openMenu(this, player, NumismaticsBlocks.BRASS_DEPOSITOR.asStack());
+        TrustListMenu.openMenu(this, player, AllBlocks.SUBSCRIPTION_MANAGER.asStack());
     }
 
     public void openSubsListMenu(ServerPlayer player) {
-        SubsListMenu.openMenu(this, player, NumismaticsBlocks.BRASS_DEPOSITOR.asStack());
+        SubsListMenu.openMenu(this, player, AllBlocks.SUBSCRIPTION_MANAGER.asStack());
     }
 }

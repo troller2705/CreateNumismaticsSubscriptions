@@ -3,7 +3,9 @@ package com.troller2705.numismatics_subscriptions.content.subscription_manager.s
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
+import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
+import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import com.troller2705.numismatics_subscriptions.SubscriptionGuiTextures;
 import net.minecraft.client.gui.GuiGraphics;
@@ -23,7 +25,7 @@ import java.util.UUID;
 import static javax.swing.plaf.basic.BasicGraphicsUtils.drawString;
 
 public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
-    private final SubscriptionGuiTextures background = SubscriptionGuiTextures.SUBSCRIPTION_DEPOSITOR;
+    private final SubscriptionGuiTextures background = SubscriptionGuiTextures.SUBS_LIST;
     private final List<String[]> stringRows = new ArrayList<>();
     private final int rowHeight = 12;
     private int scrollOffset = 0;
@@ -61,6 +63,10 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
 
         addRenderableWidget(scrollInput);
 
+        IconButton confirmButton = new IconButton(leftPos + background.width - 41, topPos + background.height - 24, AllIcons.I_CONFIRM);
+        confirmButton.withCallback(this::onClose);
+        addRenderableWidget(confirmButton);
+
     }
 
     @Override
@@ -73,21 +79,25 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
         int y = topPos;
 
         background.render(guiGraphics, x, y);
+        guiGraphics.drawCenteredString(font, title, x + (background.width - 8) / 2, y + 3, 0x000000);
+        guiGraphics.drawString(font, "User", leftPos + 20, y + 20, 0x000000, false);
+        guiGraphics.drawString(font, "Validity", leftPos + imageWidth / 2 + 20, y + 20, 0x000000, false);
         // Clipping region for scrollable area
         guiGraphics.enableScissor(leftPos + 10, topPos + 20, leftPos + imageWidth - 10, topPos + imageHeight - 20);
 
-        int startY = topPos + 20 - scrollOffset;
+        int startY = topPos + 45 - scrollOffset;
         for (int i = 0; i < stringRows.size(); i++) {
             y = startY + i * rowHeight;
             if (y + rowHeight > topPos + imageHeight - 20 || y < topPos + 20)
                 continue;
 
             String[] row = stringRows.get(i);
-            guiGraphics.drawString(font, row[0], leftPos + 20, y, 0xFFFFFF, false);
-            guiGraphics.drawString(font, row[1], leftPos + imageWidth / 2 + 20, y, 0xAAAAAA, false);
+            guiGraphics.drawString(font, row[0], leftPos + 20, y, 0x000000, false);
+            if (row[1].equals("Valid")) guiGraphics.drawString(font, row[1], leftPos + imageWidth / 2 + 20, y, 0x00FF00, false);
+            else guiGraphics.drawString(font, row[1], leftPos + imageWidth / 2 + 20, y, 0xFF0000, false);
         }
         x = leftPos + imageWidth / 2;
-        guiGraphics.fill(x, topPos + 10, x + 1, topPos + imageHeight - 10, 0xFFFFFFFF);
+        guiGraphics.fill(x, topPos + 40, x + 1, topPos + imageHeight - 20, 0xFF000000);
         guiGraphics.disableScissor();
     }
 

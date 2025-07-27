@@ -85,7 +85,7 @@ public class SubscriptionBehaviour extends BlockEntityBehaviour {
 
     public int getInterval() {
         var extAcc = getExtendedAccount();
-        if(extAcc == null) return -1;
+        if(extAcc == null) return 0;
 
         return extAcc.getInterval();
     }
@@ -93,7 +93,7 @@ public class SubscriptionBehaviour extends BlockEntityBehaviour {
 
     public String getUnit() {
         var extAcc = getExtendedAccount();
-        if(extAcc == null) return AllConstants.Time.HOURS;
+        if(extAcc == null) return AllConstants.Time.SECONDS;
 
         return extAcc.getUnit();
     }
