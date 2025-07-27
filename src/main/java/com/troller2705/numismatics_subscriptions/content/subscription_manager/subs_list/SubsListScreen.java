@@ -8,6 +8,7 @@ import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import com.troller2705.numismatics_subscriptions.SubscriptionGuiTextures;
+import dev.ithundxr.createnumismatics.content.backend.BankAccount;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
@@ -32,7 +33,7 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
     private int maxScroll;
     private int viewHeight;
 
-    private List<Pair<GameProfile, Boolean>> subs = new ArrayList<>();
+    private List<Pair<BankAccount, Boolean>> subs = new ArrayList<>();
 
     private ScrollInput scrollInput;
 
@@ -113,13 +114,13 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
         return true;
     }
 
-    public void receiveProfiles(List<Pair<GameProfile, Boolean>> profiles)
+    public void receiveProfiles(List<Pair<BankAccount, Boolean>> profiles)
     {
         this.subs = profiles;
-        for (Pair<GameProfile, Boolean> sub : this.subs)
+        for (Pair<BankAccount, Boolean> sub : this.subs)
         {
             String val = sub.getSecond() ? "Valid" : "Invalid";
-            stringRows.add(new String[]{sub.getFirst().getName(), val});
+            stringRows.add(new String[]{sub.getFirst().getLabel(), val});
         }
 
         viewHeight = imageHeight - 40;

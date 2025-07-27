@@ -6,6 +6,8 @@ import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.gui.menu.MenuBase;
 import com.troller2705.numismatics_subscriptions.AllMenuTypes;
 import com.troller2705.numismatics_subscriptions.content.subscription_manager.SubscriptionManagerBlockEntity;
+import dev.ithundxr.createnumismatics.Numismatics;
+import dev.ithundxr.createnumismatics.content.backend.BankAccount;
 import dev.ithundxr.createnumismatics.content.backend.Trusted;
 import dev.ithundxr.createnumismatics.util.Utils;
 import net.createmod.catnip.platform.CatnipServices;
@@ -38,14 +40,12 @@ public class SubsListMenu extends MenuBase<SubsListHolder>
         this.renderedItem = renderedItem;
         if (inv.player.level() instanceof ServerLevel serverLevel) {
             var data = ((SubscriptionManagerBlockEntity) contentHolder).getExtendedAccount().getAll();
-            List<Pair<GameProfile, Boolean>> subscribers = new ArrayList<>();
+            List<Pair<BankAccount, Boolean>> subscribers = new ArrayList<>();
 
             data.put(inv.player.getUUID(), true);
 
             for (Map.Entry<UUID, Boolean> entry : data.entrySet()) {
-                GameProfile profile = serverLevel.getServer().getProfileCache()
-                        .get(entry.getKey())
-                        .orElse(null);
+                BankAccount profile = Numismatics.BANK.getAccount(entry.getKey());
 
                 subscribers.add(new Pair<>(profile, entry.getValue()));
             }
