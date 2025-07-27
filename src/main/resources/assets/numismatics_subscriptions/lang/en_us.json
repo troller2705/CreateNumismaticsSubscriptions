@@ -5,5 +5,6 @@
   "item.numismatics_subscriptions.subscription_guide": "Subscription Guide",
   "block.numismatics_subscriptions.subscription_depositor.tooltip": "SUBSCRIPTION DEPOSITOR",
   "block.numismatics_subscriptions.subscription_depositor.tooltip.price": "%s %s, %s¤ every %s %s",
+  "gui.numismatics_subscriptions.subs_list": "Subscriber List",
   "block.numismatics_subscriptions.subscription_depositor.tooltip.summary": "_Shift click_ the _top_ to configure, _right click_ to subscribe for the given amount with the card in your hand, at which point a redstone pulse is emmited until you either unsubscribe or run out of money."
 }

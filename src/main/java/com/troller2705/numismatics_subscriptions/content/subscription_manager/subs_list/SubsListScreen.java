@@ -1,5 +1,6 @@
 package com.troller2705.numismatics_subscriptions.content.subscription_manager.subs_list;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
@@ -12,11 +13,12 @@ import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
-import org.apache.commons.lang3.tuple.Pair;
+import com.mojang.datafixers.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static javax.swing.plaf.basic.BasicGraphicsUtils.drawString;
 
@@ -28,6 +30,10 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
     private int maxScroll;
     private int viewHeight;
 
+    private List<Pair<GameProfile, Boolean>> subs = new ArrayList<>();
+
+    private ScrollInput scrollInput;
+
     public SubsListScreen(SubsListMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
     }
@@ -38,10 +44,6 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
         leftPos = (width - imageWidth) / 2;
         topPos = (height - imageHeight) / 2;
 
-        // Fake data
-        for (int i = 0; i < 50; i++) {
-            stringRows.add(new String[]{"Label " + i, "Value " + i});
-        }
 
         viewHeight = imageHeight - 40;
         maxScroll = Math.max(0, stringRows.size() * rowHeight - viewHeight);
@@ -49,7 +51,7 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
         // Optional: add Create-style scroll input
         int maxIndex = maxScroll / rowHeight;
 
-        ScrollInput scrollInput = new ScrollInput(leftPos + imageWidth - 20, topPos + 20, 14, 80)
+        scrollInput = new ScrollInput(leftPos + imageWidth - 20, topPos + 20, 14, 80)
                 .withRange(0, maxIndex)
                 .titled(Component.literal("")) // Empty title disables most of the tooltip text
                 .calling(i -> scrollOffset = (maxIndex - i) * rowHeight); // Inverted!
@@ -82,10 +84,10 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
 
             String[] row = stringRows.get(i);
             guiGraphics.drawString(font, row[0], leftPos + 20, y, 0xFFFFFF, false);
-            guiGraphics.drawString(font, row[1], leftPos + imageWidth / 2, y, 0xAAAAAA, false);
-            guiGraphics.hLine(leftPos + 10, leftPos + imageWidth - 10, y + rowHeight - 2, 0x333333);
+            guiGraphics.drawString(font, row[1], leftPos + imageWidth / 2 + 20, y, 0xAAAAAA, false);
         }
-
+        x = leftPos + imageWidth / 2;
+        guiGraphics.fill(x, topPos + 10, x + 1, topPos + imageHeight - 10, 0xFFFFFFFF);
         guiGraphics.disableScissor();
     }
 
@@ -99,6 +101,24 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
         scrollOffset = (int) Math.max(0, Math.min(maxScroll, scrollOffset - delta * rowHeight));
         return true;
+    }
+
+    public void receiveProfiles(List<Pair<GameProfile, Boolean>> profiles)
+    {
+        this.subs = profiles;
+        for (Pair<GameProfile, Boolean> sub : this.subs)
+        {
+            String val = sub.getSecond() ? "Valid" : "Invalid";
+            stringRows.add(new String[]{sub.getFirst().getName(), val});
+        }
+
+        viewHeight = imageHeight - 40;
+        maxScroll = Math.max(0, stringRows.size() * rowHeight - viewHeight);
+
+        // Optional: add Create-style scroll input
+        int maxIndex = maxScroll / rowHeight;
+        scrollInput.withRange(0, maxIndex);
+        scrollInput.setState(maxIndex);
     }
 
 }

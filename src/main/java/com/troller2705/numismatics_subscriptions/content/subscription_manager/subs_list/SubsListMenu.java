@@ -1,13 +1,14 @@
 package com.troller2705.numismatics_subscriptions.content.subscription_manager.subs_list;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.datafixers.util.Pair;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.gui.menu.MenuBase;
 import com.troller2705.numismatics_subscriptions.AllMenuTypes;
-import com.troller2705.numismatics_subscriptions.content.backend.SubscriptionsBankData;
 import com.troller2705.numismatics_subscriptions.content.subscription_manager.SubscriptionManagerBlockEntity;
 import dev.ithundxr.createnumismatics.content.backend.Trusted;
 import dev.ithundxr.createnumismatics.util.Utils;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -18,7 +19,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -30,36 +30,28 @@ public class SubsListMenu extends MenuBase<SubsListHolder>
     public SubsListMenu(MenuType<?> type, int id, Inventory inv, RegistryFriendlyByteBuf extraData)
     {
         super(type, id, inv, extraData);
+
+    }
+
+    public SubsListMenu(MenuType<?> type, int id, Inventory inv, SubsListHolder contentHolder, ItemStack renderedItem) {
+        super(type, id, inv, contentHolder);
+        this.renderedItem = renderedItem;
         if (inv.player.level() instanceof ServerLevel serverLevel) {
-            var data = SubscriptionsBankData.get(serverLevel).getAll();
-            List<Pair<String, Boolean>> list = new ArrayList<>();
+            var data = ((SubscriptionManagerBlockEntity) contentHolder).getExtendedAccount().getAll();
+            List<Pair<GameProfile, Boolean>> subscribers = new ArrayList<>();
+
+            data.put(inv.player.getUUID(), true);
 
             for (Map.Entry<UUID, Boolean> entry : data.entrySet()) {
                 GameProfile profile = serverLevel.getServer().getProfileCache()
                         .get(entry.getKey())
                         .orElse(null);
 
-                String name = profile != null ? profile.getName() : entry.getKey().toString();
-                list.add(Pair.of(name, entry.getValue()));
+                subscribers.add(new Pair<>(profile, entry.getValue()));
             }
-        }
-    }
 
-    protected SubsListMenu(MenuType<?> type, int id, Inventory inv, SubsListHolder contentHolder, ItemStack renderedItem) {
-        super(type, id, inv, contentHolder);
-        this.renderedItem = renderedItem;
-        if (inv.player.level() instanceof ServerLevel serverLevel) {
-            var data = SubscriptionsBankData.get(serverLevel).getAll();
-            List<Pair<String, Boolean>> list = new ArrayList<>();
-
-            for (Map.Entry<UUID, Boolean> entry : data.entrySet()) {
-                GameProfile profile = Objects.requireNonNull(serverLevel.getServer().getProfileCache())
-                        .get(entry.getKey())
-                        .orElse(null);
-
-                String name = profile != null ? profile.getName() : entry.getKey().toString();
-                list.add(Pair.of(name, entry.getValue()));
-            }
+            if(inv.player instanceof ServerPlayer serverPlayer)
+                CatnipServices.NETWORK.sendToClient(serverPlayer, new SyncSubscribersPacket(subscribers));
         }
     }
 
@@ -88,7 +80,7 @@ public class SubsListMenu extends MenuBase<SubsListHolder>
         return new MenuProvider() {
             @Override
             public @NotNull Component getDisplayName() {
-                return Component.translatable("gui.numismatics.trust_list");
+                return Component.translatable("gui.numismatics_subscriptions.subs_list");
             }
 
             @Override

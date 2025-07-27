@@ -2,7 +2,8 @@ package com.troller2705.numismatics_subscriptions;
 
 import com.troller2705.numismatics_subscriptions.content.subscription_manager.ExtendedBankAccountConfigurationPacket;
 import com.troller2705.numismatics_subscriptions.content.subscription_manager.SubscriptionManagerEditPacket;
-import dev.ithundxr.createnumismatics.registry.packets.OpenTrustListPacket;
+import com.troller2705.numismatics_subscriptions.content.subscription_manager.subs_list.OpenSubsListPacket;
+import com.troller2705.numismatics_subscriptions.content.subscription_manager.subs_list.SyncSubscribersPacket;
 import net.createmod.catnip.net.base.BasePacketPayload;
 import net.createmod.catnip.net.base.CatnipPacketRegistry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -15,11 +16,13 @@ public enum SubscriptionPackets implements BasePacketPayload.PacketTypeProvider
 {
     SUBSCRIPTION_MANAGER_EDIT(SubscriptionManagerEditPacket.class, SubscriptionManagerEditPacket.STREAM_CODEC),
     OPEN_SUBS_LIST(OpenSubsListPacket.class, OpenSubsListPacket.STREAM_CODEC),
+    SYNC_GAME_PROFILES(SyncSubscribersPacket.class, SyncSubscribersPacket.STREAM_CODEC),
     EXTENDED_BANK_ACCOUNT_CONFIGURATION(ExtendedBankAccountConfigurationPacket.class, ExtendedBankAccountConfigurationPacket.STREAM_CODEC);
 
     private final CatnipPacketRegistry.PacketType<?> type;
 
-    <T extends BasePacketPayload> SubscriptionPackets(Class<T> clazz, StreamCodec<? super RegistryFriendlyByteBuf, T> codec) {
+    <T extends BasePacketPayload> SubscriptionPackets(Class<T> clazz, StreamCodec<? super RegistryFriendlyByteBuf, T> codec)
+    {
         String name = this.name().toLowerCase(Locale.ROOT);
         this.type = new CatnipPacketRegistry.PacketType<>(
                 new CustomPacketPayload.Type<>(NumismaticsSubscriptions.asResource(name)),
@@ -29,13 +32,16 @@ public enum SubscriptionPackets implements BasePacketPayload.PacketTypeProvider
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends CustomPacketPayload> CustomPacketPayload.Type<T> getType() {
+    public <T extends CustomPacketPayload> CustomPacketPayload.Type<T> getType()
+    {
         return (CustomPacketPayload.Type<T>) this.type.type();
     }
 
-    public static void register() {
+    public static void register()
+    {
         CatnipPacketRegistry packetRegistry = new CatnipPacketRegistry(NumismaticsSubscriptions.MODID, 2); // increment version on changes
-        for (SubscriptionPackets packet : SubscriptionPackets.values()) {
+        for (SubscriptionPackets packet : SubscriptionPackets.values())
+        {
             packetRegistry.registerPacket(packet.type);
         }
         packetRegistry.registerAllPackets();
