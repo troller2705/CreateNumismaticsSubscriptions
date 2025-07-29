@@ -1,27 +1,22 @@
 package com.troller2705.numismatics_subscriptions.content.subscription_manager.subs_list;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import com.troller2705.numismatics_subscriptions.SubscriptionGuiTextures;
+import com.troller2705.numismatics_subscriptions.content.backend.SubscriptionStatus;
 import dev.ithundxr.createnumismatics.content.backend.BankAccount;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentContents;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import com.mojang.datafixers.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static javax.swing.plaf.basic.BasicGraphicsUtils.drawString;
 
@@ -33,7 +28,7 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
     private int maxScroll;
     private int viewHeight;
 
-    private List<Pair<BankAccount, Boolean>> subs = new ArrayList<>();
+    private List<SubscriptionStatus> subs = new ArrayList<>();
 
     private ScrollInput scrollInput;
 
@@ -114,13 +109,13 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
         return true;
     }
 
-    public void receiveProfiles(List<Pair<BankAccount, Boolean>> profiles)
+    public void receiveProfiles(List<SubscriptionStatus> profiles)
     {
         this.subs = profiles;
-        for (Pair<BankAccount, Boolean> sub : this.subs)
+        for (SubscriptionStatus sub : this.subs)
         {
-            String val = sub.getSecond() ? "Valid" : "Invalid";
-            stringRows.add(new String[]{sub.getFirst().getLabel(), val});
+            String val = sub.isSubscribed() ? "Valid" : "Invalid";
+            stringRows.add(new String[]{sub.name(), val});
         }
 
         viewHeight = imageHeight - 40;

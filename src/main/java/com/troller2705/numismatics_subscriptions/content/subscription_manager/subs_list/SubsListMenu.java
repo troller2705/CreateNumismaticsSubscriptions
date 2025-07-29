@@ -5,10 +5,12 @@ import com.mojang.datafixers.util.Pair;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.gui.menu.MenuBase;
 import com.troller2705.numismatics_subscriptions.AllMenuTypes;
+import com.troller2705.numismatics_subscriptions.content.backend.SubscriptionStatus;
 import com.troller2705.numismatics_subscriptions.content.subscription_manager.SubscriptionManagerBlockEntity;
 import dev.ithundxr.createnumismatics.Numismatics;
 import dev.ithundxr.createnumismatics.content.backend.BankAccount;
 import dev.ithundxr.createnumismatics.content.backend.Trusted;
+import dev.ithundxr.createnumismatics.util.UsernameUtils;
 import dev.ithundxr.createnumismatics.util.Utils;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -40,14 +42,33 @@ public class SubsListMenu extends MenuBase<SubsListHolder>
         this.renderedItem = renderedItem;
         if (inv.player.level() instanceof ServerLevel serverLevel) {
             var data = ((SubscriptionManagerBlockEntity) contentHolder).getExtendedAccount().getAll();
-            List<Pair<BankAccount, Boolean>> subscribers = new ArrayList<>();
+            List<SubscriptionStatus> subscribers = new ArrayList<>();
 
+            //TODO: Dev only
             data.put(inv.player.getUUID(), true);
+            data.put(UUID.fromString("0c069de8-e1ce-46be-b67a-c2f06dfb40fc"), false);
+            data.put(UUID.fromString("7ab87465-0ab9-4b72-9412-a54690d3291b"), false);
+            data.put(UUID.fromString("853c80ef-3c37-49fd-aa49-938b674adae6"), false);
+            data.put(UUID.fromString("61699b2e-d327-4a01-9f1e-0ea8c3f06bc6"), false);
 
             for (Map.Entry<UUID, Boolean> entry : data.entrySet()) {
-                BankAccount profile = Numismatics.BANK.getAccount(entry.getKey());
+                BankAccount account = Numismatics.BANK.getAccount(entry.getKey());
 
-                subscribers.add(new Pair<>(profile, entry.getValue()));
+                if(account != null){
+                    String label = null;
+                    switch (account.type){
+                        case PLAYER:
+                            label = UsernameUtils.INSTANCE.getName(account.id);
+                            break;
+                        default:
+                            label = account.getLabel();
+                            break;
+                    }
+
+                    subscribers.add(new SubscriptionStatus(account.id, label, entry.getValue()));
+                }else{
+                    subscribers.add(new SubscriptionStatus(entry.getKey(), UsernameUtils.INSTANCE.getName(entry.getKey()), entry.getValue()));
+                }
             }
 
             if(inv.player instanceof ServerPlayer serverPlayer)
