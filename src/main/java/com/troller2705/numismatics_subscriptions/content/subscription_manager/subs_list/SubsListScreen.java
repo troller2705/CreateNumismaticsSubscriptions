@@ -66,7 +66,17 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
                 continue;
 
             String[] row = stringRows.get(i);
-            guiGraphics.drawString(font, row[0], leftPos + 20, y, 0x000000, false);
+            int textStartX = leftPos + 20;
+            int dividerX = leftPos + imageWidth / 2;
+            int availableWidth = dividerX - textStartX - 4; // leave some padding
+
+            String name = row[0];
+            String displayName = font.plainSubstrByWidth(name, availableWidth);
+            if (!displayName.equals(name)) {
+                displayName = font.plainSubstrByWidth(name, availableWidth - font.width("...")) + "...";
+            }
+
+            guiGraphics.drawString(font, displayName, textStartX, y, 0x000000, false);
             if (row[1].equals("Valid")) guiGraphics.drawString(font, row[1], leftPos + imageWidth / 2 + 20, y, 0x00FF00, false);
             else guiGraphics.drawString(font, row[1], leftPos + imageWidth / 2 + 20, y, 0xFF0000, false);
         }
