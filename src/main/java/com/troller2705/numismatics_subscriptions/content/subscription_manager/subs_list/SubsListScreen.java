@@ -23,7 +23,7 @@ import static javax.swing.plaf.basic.BasicGraphicsUtils.drawString;
 public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
     private final SubscriptionGuiTextures background = SubscriptionGuiTextures.SUBS_LIST;
     private final List<String[]> stringRows = new ArrayList<>();
-    private final int rowHeight = 12;
+    private final int rowHeight = 10;
     private int scrollOffset = 0;
     private int maxScroll;
     private int viewHeight;
@@ -52,10 +52,11 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
         scrollInput = new ScrollInput(leftPos + imageWidth - 20, topPos + 20, 14, 80)
                 .withRange(0, maxIndex)
                 .titled(Component.literal("")) // Empty title disables most of the tooltip text
-                .calling(i -> scrollOffset = (maxIndex - i) * rowHeight); // Inverted!
+                .calling(i -> scrollOffset = i * rowHeight);
         scrollInput.setTooltip(Tooltip.create(Component.literal("")));
+        scrollInput.inverted();
 
-        scrollInput.setState(maxIndex);
+        scrollInput.setState(0);
 
         addRenderableWidget(scrollInput);
 
@@ -75,11 +76,11 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
         int y = topPos;
 
         background.render(guiGraphics, x, y);
-        guiGraphics.drawCenteredString(font, title, x + (background.width - 8) / 2, y + 3, 0x000000);
+        guiGraphics.drawCenteredString(font, title, x + (background.width - 8) / 2, y + 3, 0xFFFFFF);
         guiGraphics.drawString(font, "User", leftPos + 20, y + 20, 0x000000, false);
         guiGraphics.drawString(font, "Validity", leftPos + imageWidth / 2 + 20, y + 20, 0x000000, false);
         // Clipping region for scrollable area
-        guiGraphics.enableScissor(leftPos + 10, topPos + 20, leftPos + imageWidth - 10, topPos + imageHeight - 20);
+        guiGraphics.enableScissor(leftPos + 10, topPos + 45, leftPos + imageWidth - 10, topPos + imageHeight - 20);
 
         int startY = topPos + 45 - scrollOffset;
         for (int i = 0; i < stringRows.size(); i++) {
@@ -118,13 +119,13 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
             stringRows.add(new String[]{sub.name(), val});
         }
 
-        viewHeight = imageHeight - 40;
+        viewHeight = 120;
         maxScroll = Math.max(0, stringRows.size() * rowHeight - viewHeight);
 
         // Optional: add Create-style scroll input
         int maxIndex = maxScroll / rowHeight;
         scrollInput.withRange(0, maxIndex);
-        scrollInput.setState(maxIndex);
+        scrollInput.setState(0);
     }
 
 }
