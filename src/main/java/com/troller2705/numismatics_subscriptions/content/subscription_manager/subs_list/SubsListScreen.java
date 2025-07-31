@@ -7,18 +7,13 @@ import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import com.troller2705.numismatics_subscriptions.SubscriptionGuiTextures;
 import com.troller2705.numismatics_subscriptions.content.backend.SubscriptionStatus;
-import dev.ithundxr.createnumismatics.content.backend.BankAccount;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import com.mojang.datafixers.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static javax.swing.plaf.basic.BasicGraphicsUtils.drawString;
 
 public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
     private final SubscriptionGuiTextures background = SubscriptionGuiTextures.SUBS_LIST;
@@ -26,7 +21,6 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
     private final int rowHeight = 10;
     private int scrollOffset = 0;
     private int maxScroll;
-    private int viewHeight;
 
     private List<SubscriptionStatus> subs = new ArrayList<>();
 
@@ -42,23 +36,6 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
         leftPos = (width - imageWidth) / 2;
         topPos = (height - imageHeight) / 2;
 
-
-        viewHeight = imageHeight - 40;
-        maxScroll = Math.max(0, stringRows.size() * rowHeight - viewHeight);
-
-        // Optional: add Create-style scroll input
-        int maxIndex = maxScroll / rowHeight;
-
-        scrollInput = new ScrollInput(leftPos + imageWidth - 20, topPos + 20, 14, 80)
-                .withRange(0, maxIndex)
-                .titled(Component.literal("")) // Empty title disables most of the tooltip text
-                .calling(i -> scrollOffset = i * rowHeight);
-        scrollInput.setTooltip(Tooltip.create(Component.literal("")));
-        scrollInput.inverted();
-
-        scrollInput.setState(0);
-
-        addRenderableWidget(scrollInput);
 
         IconButton confirmButton = new IconButton(leftPos + background.width - 41, topPos + background.height - 24, AllIcons.I_CONFIRM);
         confirmButton.withCallback(this::onClose);
@@ -99,14 +76,15 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         renderTooltip(guiGraphics, mouseX, mouseY);
     }
 
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        scrollOffset = (int) Math.max(0, Math.min(maxScroll, scrollOffset - delta * rowHeight));
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double pScrollX, double pScrollY) {
+        scrollOffset = (int) Math.max(0, Math.min(maxScroll, scrollOffset - pScrollY * rowHeight));
         return true;
     }
 
@@ -119,13 +97,7 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
             stringRows.add(new String[]{sub.name(), val});
         }
 
-        viewHeight = 120;
-        maxScroll = Math.max(0, stringRows.size() * rowHeight - viewHeight);
-
-        // Optional: add Create-style scroll input
-        int maxIndex = maxScroll / rowHeight;
-        scrollInput.withRange(0, maxIndex);
-        scrollInput.setState(0);
+        maxScroll = Math.max(0, stringRows.size() * rowHeight - 120);
     }
 
 }
