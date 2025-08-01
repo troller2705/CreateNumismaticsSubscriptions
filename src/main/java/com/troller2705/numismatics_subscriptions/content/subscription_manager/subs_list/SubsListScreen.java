@@ -1,5 +1,6 @@
 package com.troller2705.numismatics_subscriptions.content.subscription_manager.subs_list;
 
+import com.google.common.collect.ImmutableList;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
@@ -8,17 +9,19 @@ import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import com.troller2705.numismatics_subscriptions.SubscriptionGuiTextures;
 import com.troller2705.numismatics_subscriptions.content.backend.SubscriptionStatus;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
     private final SubscriptionGuiTextures background = SubscriptionGuiTextures.SUBS_LIST;
     private final List<String[]> stringRows = new ArrayList<>();
-    private final int rowHeight = 10;
+    private final int rowHeight = 12;
     private int scrollOffset = 0;
     private int maxScroll;
 
@@ -26,21 +29,31 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
 
     private ScrollInput scrollInput;
 
+    private List<Rect2i> extraAreas = Collections.emptyList();
+
     public SubsListScreen(SubsListMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
     }
 
     @Override
     protected void init() {
+        setWindowSize(background.width, background.height + 2 + AllGuiTextures.PLAYER_INVENTORY.getHeight());
+        setWindowOffset(-20, 0);
         super.init();
-        leftPos = (width - imageWidth) / 2;
-        topPos = (height - imageHeight) / 2;
 
+        int x = leftPos;
+        int y = topPos;
 
         IconButton confirmButton = new IconButton(leftPos + background.width - 41, topPos + background.height - 24, AllIcons.I_CONFIRM);
         confirmButton.withCallback(this::onClose);
         addRenderableWidget(confirmButton);
 
+        extraAreas = ImmutableList.of(new Rect2i(x + background.width, y + background.height - 64, 84, 74));
+    }
+
+    @Override
+    public List<Rect2i> getExtraAreas() {
+        return extraAreas;
     }
 
     @Override
@@ -57,9 +70,9 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
         guiGraphics.drawString(font, "User", leftPos + 20, y + 20, 0x000000, false);
         guiGraphics.drawString(font, "Validity", leftPos + imageWidth / 2 + 20, y + 20, 0x000000, false);
         // Clipping region for scrollable area
-        guiGraphics.enableScissor(leftPos + 10, topPos + 45, leftPos + imageWidth - 10, topPos + imageHeight - 20);
+        guiGraphics.enableScissor(leftPos + 10, topPos + 40, leftPos + background.width - 10, topPos + background.height - 32);
 
-        int startY = topPos + 45 - scrollOffset;
+        int startY = topPos + 40 - scrollOffset;
         for (int i = 0; i < stringRows.size(); i++) {
             y = startY + i * rowHeight;
             if (y + rowHeight > topPos + imageHeight - 20 || y < topPos + 20)
@@ -80,16 +93,9 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
             if (row[1].equals("Valid")) guiGraphics.drawString(font, row[1], leftPos + imageWidth / 2 + 20, y, 0x00FF00, false);
             else guiGraphics.drawString(font, row[1], leftPos + imageWidth / 2 + 20, y, 0xFF0000, false);
         }
-        x = leftPos + imageWidth / 2;
-        guiGraphics.fill(x, topPos + 40, x + 1, topPos + imageHeight - 20, 0xFF000000);
         guiGraphics.disableScissor();
-    }
-
-    @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
-        renderTooltip(guiGraphics, mouseX, mouseY);
+        x = leftPos + imageWidth / 2;
+        guiGraphics.fill(x, topPos + 37, x + 1, topPos + background.height - 30, 0xFF000000);
     }
 
     @Override
