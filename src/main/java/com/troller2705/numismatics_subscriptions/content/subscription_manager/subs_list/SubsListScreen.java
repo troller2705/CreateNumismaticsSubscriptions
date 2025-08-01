@@ -67,10 +67,10 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
 
         background.render(guiGraphics, x, y);
         guiGraphics.drawCenteredString(font, title, x + (background.width - 8) / 2, y + 3, 0xFFFFFF);
-        guiGraphics.drawString(font, "User", leftPos + 20, y + 20, 0x000000, false);
+        guiGraphics.drawString(font, "User", leftPos + (imageWidth / 2) / 2 - 10, y + 20, 0x000000, false);
         guiGraphics.drawString(font, "Validity", leftPos + imageWidth / 2 + 20, y + 20, 0x000000, false);
         // Clipping region for scrollable area
-        guiGraphics.enableScissor(leftPos + 10, topPos + 40, leftPos + background.width - 10, topPos + background.height - 32);
+        guiGraphics.enableScissor(leftPos + 10, topPos + 40, leftPos + background.width - 10, topPos + background.height - 31);
 
         int startY = topPos + 40 - scrollOffset;
         for (int i = 0; i < stringRows.size(); i++) {
