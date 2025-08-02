@@ -48,6 +48,8 @@ public class SubscriptionProcessor {
 
             for (Map.Entry<UUID, Boolean> subscriber : extAcc.getSubscribers().entrySet()){
 
+                // Skip invalid accounts
+                if(!subscriber.getValue()) continue;
 
                 // Add new subscribers
                 var currentSubscriber = currentSubscription.putIfAbsent(subscriber.getKey(), timestamp);
