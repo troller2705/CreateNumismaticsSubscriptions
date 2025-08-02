@@ -35,6 +35,7 @@ import dev.ithundxr.createnumismatics.content.depositor.AbstractDepositorBlockEn
 import dev.ithundxr.createnumismatics.util.TextUtils;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.lang.Lang;
+import net.createmod.catnip.platform.Env;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -75,8 +76,16 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
         if (!cardContainer.getItem(0).isEmpty())
         {
             ItemStack card = cardContainer.getItem(0);
-            String name = CardItem.getPlayerName(card);
-            assert name != null;
+            String name;
+            if (Env.CLIENT.isCurrent())
+            {
+                 name = CardItem.getPlayerName(card);
+            }
+            else
+            {
+                 name = Numismatics.BANK.getAccount(CardItem.get(card)).getLabel();
+            }
+//            assert name != null;
             return Component.literal(name);
         }
         else

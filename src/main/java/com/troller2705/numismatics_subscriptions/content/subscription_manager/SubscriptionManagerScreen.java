@@ -123,7 +123,7 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
                     .titled(Component.literal(TextUtils.titleCaseConversion(coin.getName(0))))
                     .calling((value) -> {
                         coinPrices[i] = value;
-//                        menu.contentHolder.setPrice(coin, value);
+                        menu.contentHolder.setPrice(coin, value);
                         coinLabels[i].setX(baseX + 18 - font.width(coinLabels[i].text) / 2);
                     });
             addRenderableWidget(coinScrollInputs[i]);
@@ -159,7 +159,7 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
                 .titled(Component.literal("Time Increment"))
                 .calling((value) -> {
                     interval = value;
-//                    menu.contentHolder.setInterval(value);
+                    menu.contentHolder.setInterval(value);
                     timeLabel.setX(baseX + 18 - font.width(timeLabel.text) / 2);
                 });
         addRenderableWidget(timeScrollInputs);
@@ -183,7 +183,7 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
                 .titled(Component.literal("Time Unit"))
                 .calling((idx) -> {
                     unit = timeOptns[idx];
-//                    menu.contentHolder.setUnit(timeOptns[idx]);
+                    menu.contentHolder.setUnit(timeOptns[idx]);
 //                    String text = timeOptions[value];
 //                    timeTypeLabel.text = Component.literal(text);
                     timeTypeLabel.setX(baseX2 + 18 - font.width(timeTypeLabel.text) / 2);
