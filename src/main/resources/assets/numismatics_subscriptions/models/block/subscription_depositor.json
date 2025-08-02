@@ -2,8 +2,8 @@
   "parent": "minecraft:block/orientable",
   "textures": {
     "front": "numismatics_subscriptions:block/depositor/brass_depositor_slot",
-    "particle": "create:block/brass_casing",
-    "side": "create:block/brass_casing",
+    "particle": "numismatics_subscriptions:block/depositor/brass_casing",
+    "side": "numismatics_subscriptions:block/depositor/brass_casing",
     "top": "numismatics_subscriptions:block/depositor/brass_depositor_select"
   }
 }

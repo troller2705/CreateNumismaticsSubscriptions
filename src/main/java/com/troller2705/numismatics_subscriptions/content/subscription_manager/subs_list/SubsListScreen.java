@@ -6,12 +6,19 @@ import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
+import com.troller2705.numismatics_subscriptions.AllBlockEntities;
+import com.troller2705.numismatics_subscriptions.AllBlocks;
+import com.troller2705.numismatics_subscriptions.AllItems;
 import com.troller2705.numismatics_subscriptions.SubscriptionGuiTextures;
 import com.troller2705.numismatics_subscriptions.content.backend.SubscriptionStatus;
+import com.troller2705.numismatics_subscriptions.content.subscription_manager.SubscriptionManagerBlockEntity;
+import dev.ithundxr.createnumismatics.base.client.rendering.GuiBlockEntityRenderBuilder;
+import net.createmod.catnip.gui.element.GuiGameElement;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -24,6 +31,8 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
     private final int rowHeight = 12;
     private int scrollOffset = 0;
     private int maxScroll;
+
+    private final ItemStack renderedItem = AllItems.SUBSCRIPTION_GUIDE.asStack();
 
     private List<SubscriptionStatus> subs = new ArrayList<>();
 
@@ -66,6 +75,12 @@ public class SubsListScreen extends AbstractSimiContainerScreen<SubsListMenu> {
         int y = topPos;
 
         background.render(guiGraphics, x, y);
+
+        GuiGameElement.of(renderedItem).<GuiGameElement
+                        .GuiRenderBuilder>at(x + background.width + 6, y + background.height - 70, -200)
+                .scale(5)
+                .render(guiGraphics);
+
         guiGraphics.drawCenteredString(font, title, x + (background.width - 8) / 2, y + 3, 0xFFFFFF);
         guiGraphics.drawString(font, "User", leftPos + (imageWidth / 2) / 2 - 10, y + 20, 0x000000, false);
         guiGraphics.drawString(font, "Validity", leftPos + imageWidth / 2 + 20, y + 20, 0x000000, false);

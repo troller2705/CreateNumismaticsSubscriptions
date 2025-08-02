@@ -5,6 +5,7 @@ import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.troller2705.numismatics_subscriptions.AllBlocks;
+import com.troller2705.numismatics_subscriptions.AllItems;
 import com.troller2705.numismatics_subscriptions.AllMenuTypes;
 import com.troller2705.numismatics_subscriptions.content.subscription_manager.subs_list.OpenSubsListPacket;
 import com.troller2705.numismatics_subscriptions.content.backend.ExtendedAccountData;
@@ -19,6 +20,7 @@ import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListContai
 import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListHolder;
 import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListMenu;
 import dev.ithundxr.createnumismatics.registry.NumismaticsBlocks;
+import dev.ithundxr.createnumismatics.registry.NumismaticsItems;
 import dev.ithundxr.createnumismatics.registry.packets.OpenTrustListPacket;
 import dev.ithundxr.createnumismatics.util.Utils;
 import net.createmod.catnip.animation.LerpedFloat;
@@ -42,6 +44,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -415,10 +418,10 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
     }
 
     public void openTrustListMenu(ServerPlayer player) {
-        TrustListMenu.openMenu(this, player, AllBlocks.SUBSCRIPTION_MANAGER.asStack());
+        TrustListMenu.openMenu(this, player, NumismaticsItems.ID_CARDS.get(DyeColor.RED).asStack());
     }
 
     public void openSubsListMenu(ServerPlayer player) {
-        SubsListMenu.openMenu(this, player, AllBlocks.SUBSCRIPTION_MANAGER.asStack());
+        SubsListMenu.openMenu(this, player, AllItems.SUBSCRIPTION_GUIDE.asStack());
     }
 }
