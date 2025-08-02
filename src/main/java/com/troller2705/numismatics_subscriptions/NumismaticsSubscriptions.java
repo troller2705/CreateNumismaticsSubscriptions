@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 @Mod(NumismaticsSubscriptions.MODID)
 public class NumismaticsSubscriptions {
     public static final String MODID = "numismatics_subscriptions";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
     public static final SubscriptionsBankManager BANK = new SubscriptionsBankManager();
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);

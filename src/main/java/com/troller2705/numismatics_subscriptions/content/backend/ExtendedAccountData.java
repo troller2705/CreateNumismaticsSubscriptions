@@ -76,6 +76,14 @@ public class ExtendedAccountData {
         return coinPrice;
     }
 
+    public Map<UUID, Boolean> getSubscribers() {
+        return subscribers;
+    }
+
+    public void setSubscriber(UUID subscriber, boolean isValid){
+        subscribers.put(subscriber, isValid);
+    }
+
     public CompoundTag save(CompoundTag tag) {
         tag.putUUID("id", id);
         tag.putInt("Interval", interval);
@@ -113,9 +121,5 @@ public class ExtendedAccountData {
         }
 
         return new ExtendedAccountData(id, interval, unit, allowedAccountType, price, subscribers_temp);
-    }
-
-    public Map<UUID, Boolean> getAll() {
-        return subscribers;
     }
 }

@@ -15,6 +15,8 @@ public class SubscriptionsBankManager {
     private SubscriptionsBankSavedData savedData;
     public Map<UUID, ExtendedAccountData> extendedAccounts = new HashMap<>();
 
+    public static final SubscriptionProcessor SUBSCRIPTION_PROCESSOR = new SubscriptionProcessor();
+
     public SubscriptionsBankManager() {
         cleanUp();
     }
@@ -56,6 +58,7 @@ public class SubscriptionsBankManager {
             extendedAccountData.setOnDirty(this::onBankAccountDirty);
         });
         extendedAccounts = savedData.getAccounts();
+        SUBSCRIPTION_PROCESSOR.initialize();
     }
 
     public void cleanUp() {

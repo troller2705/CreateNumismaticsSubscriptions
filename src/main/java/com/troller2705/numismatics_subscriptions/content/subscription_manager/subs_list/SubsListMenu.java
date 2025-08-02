@@ -1,7 +1,5 @@
 package com.troller2705.numismatics_subscriptions.content.subscription_manager.subs_list;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.datafixers.util.Pair;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.gui.menu.MenuBase;
 import com.troller2705.numismatics_subscriptions.AllMenuTypes;
@@ -41,7 +39,7 @@ public class SubsListMenu extends MenuBase<SubsListHolder>
         super(type, id, inv, contentHolder);
         this.renderedItem = renderedItem;
         if (inv.player.level() instanceof ServerLevel serverLevel) {
-            var data = ((SubscriptionManagerBlockEntity) contentHolder).getExtendedAccount().getAll();
+            var data = ((SubscriptionManagerBlockEntity) contentHolder).getExtendedAccount().getSubscribers();
             List<SubscriptionStatus> subscribers = new ArrayList<>();
 
             //TODO: Dev only
