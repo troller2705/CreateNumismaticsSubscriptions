@@ -50,7 +50,7 @@ public class SubscriptionManagerScreen extends AbstractSimiContainerScreen<Subsc
     private final Label[] coinLabels = new Label[COIN_COUNT];
     private final ScrollInput[] coinScrollInputs = new ScrollInput[COIN_COUNT];
 
-    private Integer[] coinPrices = new Integer[COIN_COUNT];
+    private int[] coinPrices = new int[COIN_COUNT];
     private int interval = 20;
     private String unit = "";
     private String allowedAccountType = "";

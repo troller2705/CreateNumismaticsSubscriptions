@@ -14,6 +14,9 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 public class SubscriptionManagerEditPacket extends NumismaticsBlockEntityConfigurationPacket<SubscriptionManagerBlockEntity> {
     public static final StreamCodec<FriendlyByteBuf, SubscriptionManagerEditPacket> STREAM_CODEC = StreamCodec.composite(
         BlockPos.STREAM_CODEC, i -> i.pos,
@@ -41,6 +44,15 @@ public class SubscriptionManagerEditPacket extends NumismaticsBlockEntityConfigu
         this.unit = unit;
         this.allowedAccountType = allowedAccountType;
         this.coinPrices = coinPrices;
+    }
+
+    public SubscriptionManagerEditPacket(BlockPos pos, @Nullable String label, int interval, @Nullable String unit, @Nullable String allowedAccountType, int[] coinPrices) {
+        super(pos);
+        this.label = label;
+        this.interval = interval;
+        this.unit = unit;
+        this.allowedAccountType = allowedAccountType;
+        this.coinPrices = Arrays.stream(coinPrices).boxed().toArray(Integer[]::new);
     }
 
     @Override

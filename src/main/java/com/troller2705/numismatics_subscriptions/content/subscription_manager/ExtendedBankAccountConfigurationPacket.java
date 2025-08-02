@@ -4,7 +4,6 @@ import com.simibubi.create.foundation.blockEntity.SyncedBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.troller2705.numismatics_subscriptions.SubscriptionPackets;
-import com.troller2705.numismatics_subscriptions.content.backend.ExtendedBankAccountBehaviour;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.registry.packets.BlockEntityBehaviourConfigurationPacket;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;

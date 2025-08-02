@@ -18,19 +18,13 @@
 
 package com.troller2705.numismatics_subscriptions.content.subscription_depositor;
 
-import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.troller2705.numismatics_subscriptions.AllMenuTypes;
 import com.troller2705.numismatics_subscriptions.NumismaticsSubscriptions;
 import com.troller2705.numismatics_subscriptions.content.backend.ExtendedAccountData;
-import com.troller2705.numismatics_subscriptions.content.backend.ExtendedBankAccountBehaviour;
 import dev.ithundxr.createnumismatics.Numismatics;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
-import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceBehaviour;
-import dev.ithundxr.createnumismatics.content.backend.trust_list.TrustListScreen;
 import dev.ithundxr.createnumismatics.content.bank.CardItem;
-import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BlazeBankerScreen;
-import dev.ithundxr.createnumismatics.content.coins.MergingCoinBag;
 import dev.ithundxr.createnumismatics.content.depositor.AbstractDepositorBlockEntity;
 import dev.ithundxr.createnumismatics.util.TextUtils;
 import net.createmod.catnip.data.Couple;
@@ -51,12 +45,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 
 public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEntity implements MenuProvider {
 
-    private SubscriptionBehaviour subscription;
+    private DepositorBehaviour subscription;
 
     @Nullable
     protected UUID owner;
@@ -67,7 +63,7 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        subscription = new SubscriptionBehaviour(this, this::getCardId);
+        subscription = new DepositorBehaviour(this, this::getCardId);
         behaviours.add(subscription);
     }
 
@@ -102,21 +98,50 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
         return new SubscriptionDepositorMenu(AllMenuTypes.SUBSCRIPTION_DEPOSITOR.get(), i, inventory, this);
     }
 
+    @Override
+    public void lazyTick() {
+        super.lazyTick();
+
+        if (level == null || level.isClientSide)
+            return;
+
+        var extAcc = getExtendedAccount();
+        if(extAcc != null){
+            boolean shouldUpdate = false;
+            shouldUpdate |= getInterval() != extAcc.getInterval() || getInterval() == 0;
+            shouldUpdate |= !Objects.equals(getUnit(), extAcc.getUnit());
+            shouldUpdate |= !Objects.equals(getAllowedAccountType(), extAcc.getAllowedAccountType());
+            shouldUpdate |= getTotalPrice() != extAcc.getCoinPrice().getTotalPrice();
+            shouldUpdate |= getSubscribers().size() != extAcc.getSubscribers().size();
+
+            if(shouldUpdate)
+                notifyUpdate();
+        }
+    }
+
     public ExtendedAccountData getExtendedAccount(){
         if(subscription == null) return null;
 
         return subscription.getExtendedAccount();
     }
 
-    public Integer[] getPrices() { return subscription.getPrices(); }
 
-    public int getTotalPrice() { return subscription.getTotalPrice(); }
 
     public int getInterval(){ return subscription.getInterval(); }
 
     public String getUnit(){ return subscription.getUnit(); }
 
     public String getAllowedAccountType(){ return subscription.getAllowedAccountType(); }
+
+    public int getTotalPrice() { return subscription.getTotalPrice(); }
+
+    public int[] getPrices() { return subscription.getPrices(); }
+
+    public int getPrice(Coin coin) { return subscription.getPrice(coin); }
+
+    public Map<UUID, Boolean> getSubscribers() { return subscription.getSubscribers(); }
+
+
 
     @Override
     public boolean addToTooltip(List<Component> tooltip, boolean isPlayerSneaking) {

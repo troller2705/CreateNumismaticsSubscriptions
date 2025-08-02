@@ -9,7 +9,6 @@ import com.troller2705.numismatics_subscriptions.AllItems;
 import com.troller2705.numismatics_subscriptions.AllMenuTypes;
 import com.troller2705.numismatics_subscriptions.content.subscription_manager.subs_list.OpenSubsListPacket;
 import com.troller2705.numismatics_subscriptions.content.backend.ExtendedAccountData;
-import com.troller2705.numismatics_subscriptions.content.backend.ExtendedBankAccountBehaviour;
 import com.troller2705.numismatics_subscriptions.content.subscription_manager.subs_list.SubsListHolder;
 import com.troller2705.numismatics_subscriptions.content.subscription_manager.subs_list.SubsListMenu;
 import dev.ithundxr.createnumismatics.Numismatics;
@@ -54,9 +53,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements Trusted, TrustListHolder, SubsListHolder, MenuProvider {
 
@@ -173,6 +170,19 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
         if (serversideBalance != getAccount().getBalance()) {
             serversideBalance = getAccount().getBalance();
             sendData();
+        }
+
+        var extAcc = getExtendedAccount();
+        if(extAcc != null){
+            boolean shouldUpdate = false;
+            shouldUpdate |= getInterval() != extAcc.getInterval();
+            shouldUpdate |= !Objects.equals(getUnit(), extAcc.getUnit());
+            shouldUpdate |= !Objects.equals(getAllowedAccountType(), extAcc.getAllowedAccountType());
+            shouldUpdate |= getTotalPrice() != extAcc.getCoinPrice().getTotalPrice();
+            shouldUpdate |= getSubscribers().size() != extAcc.getSubscribers().size();
+
+            if(shouldUpdate)
+                notifyUpdate();
         }
     }
 
@@ -344,28 +354,7 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
         Utils.openScreen(player, this, this::sendToMenu);
     }
 
-    public int getTotalPrice() {
-        return bankAccountBehaviour.getTotalPrice();
-    }
 
-    public int getPrice(Coin coin) {
-        return bankAccountBehaviour.getPrice(coin);
-    }
-
-    public Integer[] getPrices(){
-        return bankAccountBehaviour.getPrices();
-    }
-
-    public void setPrice(Coin coin, int price) {
-
-        if (level != null && !level.isClientSide) {
-            getExtendedAccount().getCoinPrice().setPrice(coin, price);
-        }
-
-        bankAccountBehaviour.setPrice(coin, price);
-
-        notifyUpdate();
-    }
 
     public int getInterval(){ return bankAccountBehaviour.getInterval(); }
 
@@ -402,6 +391,64 @@ public class SubscriptionManagerBlockEntity extends SmartBlockEntity implements 
 
         notifyUpdate();
     }
+
+    public int getTotalPrice() {
+        return bankAccountBehaviour.getTotalPrice();
+    }
+
+    public int[] getPrices(){
+        return bankAccountBehaviour.getPrices();
+    }
+
+    public int getPrice(Coin coin) {
+        return bankAccountBehaviour.getPrice(coin);
+    }
+
+    public void setPrice(Coin coin, int price) {
+
+        if (level != null && !level.isClientSide) {
+            getExtendedAccount().getCoinPrice().setPrice(coin, price);
+        }
+
+        bankAccountBehaviour.setPrice(coin, price);
+
+        notifyUpdate();
+    }
+
+    public Map<UUID, Boolean> getSubscribers(){
+        return bankAccountBehaviour.getSubscribers();
+    }
+
+    public void addSubscriber(UUID subscriber){
+        if (level != null && !level.isClientSide) {
+            getExtendedAccount().addSubscriber(subscriber);
+        }
+
+        bankAccountBehaviour.addSubscriber(subscriber);
+
+        notifyUpdate();
+    }
+
+    public void setSubscriber(UUID subscriber, boolean isValid){
+        if (level != null && !level.isClientSide) {
+            getExtendedAccount().setSubscriber(subscriber, isValid);
+        }
+
+        bankAccountBehaviour.setSubscriber(subscriber, isValid);
+
+        notifyUpdate();
+    }
+
+    public void removeSubscriber(UUID subscriber){
+        if (level != null && !level.isClientSide) {
+            getExtendedAccount().removeSubscriber(subscriber);
+        }
+
+        bankAccountBehaviour.removeSubscriber(subscriber);
+
+        notifyUpdate();
+    }
+
 
     public void openTrustList()
     {

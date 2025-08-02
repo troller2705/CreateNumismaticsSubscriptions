@@ -17,12 +17,11 @@ public class ExtendedAccountData {
     private Runnable onDirty;
 
     public final UUID id;
-    private final CoinPrice coinPrice;
 
     private int interval;
     private String unit;
     private String allowedAccountType;
-
+    private final CoinPrice coinPrice;
     private final Map<UUID, Boolean> subscribers = new HashMap<>();
 
 
@@ -80,8 +79,16 @@ public class ExtendedAccountData {
         return subscribers;
     }
 
+    public void addSubscriber(UUID subscriber){
+        subscribers.put(subscriber, true);
+    }
+
     public void setSubscriber(UUID subscriber, boolean isValid){
         subscribers.put(subscriber, isValid);
+    }
+
+    public void removeSubscriber(UUID subscriber){
+        subscribers.remove(subscriber);
     }
 
     public CompoundTag save(CompoundTag tag) {

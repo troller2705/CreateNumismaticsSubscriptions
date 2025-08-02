@@ -1,26 +1,32 @@
-package com.troller2705.numismatics_subscriptions.content.backend;
+package com.troller2705.numismatics_subscriptions.content.subscription_manager;
 
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType;
 import com.troller2705.numismatics_subscriptions.AllConstants;
 import com.troller2705.numismatics_subscriptions.NumismaticsSubscriptions;
+import com.troller2705.numismatics_subscriptions.content.backend.CoinPrice;
+import com.troller2705.numismatics_subscriptions.content.backend.ExtendedAccountData;
+import com.troller2705.numismatics_subscriptions.content.backend.SubscriptionBehavior;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
 import dev.ithundxr.createnumismatics.content.bank.blaze_banker.BankAccountBehaviour;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
-public class ExtendedBankAccountBehaviour extends BankAccountBehaviour {
+public class ExtendedBankAccountBehaviour extends BankAccountBehaviour implements SubscriptionBehavior {
 
     public static final BehaviourType<ExtendedBankAccountBehaviour> TYPE = new BehaviourType<>();
 
-    protected int interval;
-    protected String unit;
-    protected String allowedAccountType;
-    protected final EnumMap<Coin, Integer> prices = new EnumMap<>(Coin.class);
+    protected int interval = 0;
+    protected String unit = "";
+    protected String allowedAccountType = "";
+    protected final CoinPrice coinPrice = new CoinPrice();
+    protected final Map<UUID, Boolean> subscribers = new HashMap<>();
 
 
     public ExtendedBankAccountBehaviour(SmartBlockEntity be) {
@@ -58,11 +64,17 @@ public class ExtendedBankAccountBehaviour extends BankAccountBehaviour {
         if(allowedAccountType == null) allowedAccountType = AllConstants.AccountType.ALL;
         tag.putString("AllowedAccountType", allowedAccountType);
 
-        CompoundTag priceTag = new CompoundTag();
-        for (Coin coin : Coin.values()) {
-            priceTag.putInt(coin.getName(), getPrice(coin));
+        coinPrice.write(tag);
+
+        ListTag subscribersTag = new ListTag();
+        for (Map.Entry<UUID, Boolean> subscriber : subscribers.entrySet()){
+            CompoundTag subscriberTag = new CompoundTag();
+            subscriberTag.putUUID("UUID", subscriber.getKey());
+            subscriberTag.putBoolean("Valid", subscriber.getValue());
+            subscribersTag.add(subscriberTag);
         }
-        tag.put("Prices", priceTag);
+
+        tag.put("Subscribers", subscribersTag);
     }
 
     @Override
@@ -73,47 +85,17 @@ public class ExtendedBankAccountBehaviour extends BankAccountBehaviour {
         setUnit(tag.getString("Unit"));
         setAllowedAccountType(tag.getString("AllowedAccountType"));
 
-        this.prices.clear();
-        if (tag.contains("Prices", Tag.TAG_COMPOUND)) {
-            CompoundTag priceTag = tag.getCompound("Prices");
-            for (Coin coin : Coin.values()) {
-                if (priceTag.contains(coin.getName(), Tag.TAG_INT)) {
-                    setPrice(coin, priceTag.getInt(coin.getName()));
-                }
+        this.coinPrice.read(tag);
+
+        if(tag.contains("Subscribers")){
+            subscribers.clear();
+            var subscribersTag = tag.getList("Subscribers", Tag.TAG_COMPOUND);
+
+            for (int i = 0, l = subscribersTag.size(); i < l; i++) {
+                CompoundTag subscriberTag = subscribersTag.getCompound(i);
+                subscribers.put(subscriberTag.getUUID("UUID"), subscriberTag.getBoolean("Valid"));
             }
         }
-
-        calculateTotalPrice();
-    }
-
-    private int totalPrice = 0;
-
-    private void calculateTotalPrice() {
-        totalPrice = 0;
-        for (Map.Entry<Coin, Integer> entry : prices.entrySet()) {
-            totalPrice += entry.getKey().toSpurs(entry.getValue());
-        }
-    }
-
-    public int getTotalPrice() {
-        return totalPrice;
-    }
-
-    public Integer[] getPrices(){
-        Integer[] result = new Integer[Coin.values().length];
-        for (Coin coin : Coin.values()){
-            result[coin.ordinal()] = prices.get(coin);
-        }
-        return result;
-    }
-
-    public int getPrice(Coin coin) {
-        return prices.getOrDefault(coin, 0);
-    }
-
-    public void setPrice(Coin coin, int price) {
-        this.prices.put(coin, price);
-        calculateTotalPrice();
     }
 
     public int getInterval() {
@@ -138,5 +120,37 @@ public class ExtendedBankAccountBehaviour extends BankAccountBehaviour {
 
     public void setAllowedAccountType(String allowedAccountType) {
         this.allowedAccountType = allowedAccountType;
+    }
+
+    public int getTotalPrice() {
+        return coinPrice.getTotalPrice();
+    }
+
+    public int[] getPrices(){
+        return coinPrice.getPrices();
+    }
+
+    public int getPrice(Coin coin) {
+        return coinPrice.getPrice(coin);
+    }
+
+    public void setPrice(Coin coin, int price) {
+        coinPrice.setPrice(coin, price);
+    }
+
+    public Map<UUID, Boolean> getSubscribers() {
+        return subscribers;
+    }
+
+    public void addSubscriber(UUID uuid) {
+        subscribers.putIfAbsent(uuid, true);
+    }
+
+    public void setSubscriber(UUID uuid, boolean isValid) {
+        subscribers.put(uuid, isValid);
+    }
+
+    public void removeSubscriber(UUID uuid) {
+        subscribers.remove(uuid);
     }
 }
