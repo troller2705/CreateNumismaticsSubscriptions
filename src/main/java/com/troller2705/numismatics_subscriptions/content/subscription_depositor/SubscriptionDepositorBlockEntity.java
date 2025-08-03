@@ -141,6 +141,26 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
 
     public Map<UUID, Boolean> getSubscribers() { return subscription.getSubscribers(); }
 
+    public void addSubscriber(UUID subscriber){
+        if (level != null && !level.isClientSide) {
+            getExtendedAccount().addSubscriber(subscriber);
+        }
+
+        subscription.addSubscriber(subscriber);
+
+        notifyUpdate();
+    }
+
+    public void removeSubscriber(UUID subscriber){
+        if (level != null && !level.isClientSide) {
+            getExtendedAccount().removeSubscriber(subscriber);
+        }
+
+        subscription.removeSubscriber(subscriber);
+
+        notifyUpdate();
+    }
+
 
 
     @Override

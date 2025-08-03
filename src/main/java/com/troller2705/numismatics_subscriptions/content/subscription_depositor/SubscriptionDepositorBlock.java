@@ -21,7 +21,11 @@ package com.troller2705.numismatics_subscriptions.content.subscription_depositor
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.troller2705.numismatics_subscriptions.AllBlockEntities;
+import com.troller2705.numismatics_subscriptions.AllConstants;
+import dev.ithundxr.createnumismatics.Numismatics;
+import dev.ithundxr.createnumismatics.content.backend.BankAccount;
 import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceBehaviour;
+import dev.ithundxr.createnumismatics.content.bank.CardItem;
 import dev.ithundxr.createnumismatics.content.depositor.AbstractDepositorBlock;
 import dev.ithundxr.createnumismatics.util.Utils;
 import net.minecraft.ChatFormatting;
@@ -30,10 +34,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -69,19 +75,69 @@ public class SubscriptionDepositorBlock extends AbstractDepositorBlock<Subscript
         if (state.getValue(HORIZONTAL_FACING) != hitResult.getDirection())
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
-        if (state.getValue(POWERED) || state.getValue(LOCKED))
-            return ItemInteractionResult.FAIL;
-
         if (level.isClientSide)
             return ItemInteractionResult.SUCCESS;
 
-        SliderStylePriceBehaviour priceBehaviour = BlockEntityBehaviour.get(level, pos, SliderStylePriceBehaviour.TYPE);
-        if (priceBehaviour != null && priceBehaviour.deduct(player, hand, true)) {
-            activate(state, level, pos);
-        } else {
-            player.displayClientMessage(Component.translatable("gui.numismatics.vendor.insufficient_funds")
-                    .withStyle(ChatFormatting.DARK_RED), true);
-            level.playSound(null, pos, AllSoundEvents.DENY.getMainEvent(), SoundSource.BLOCKS, 0.5f, 1.0f);}
+        var item = player.getItemInHand(hand);
+
+        // Check is CardItem
+        if(item == null || item.isEmpty() || !(item.getItem() instanceof CardItem)){
+
+            player.displayClientMessage(Component.literal("Need to use a card").withStyle(ChatFormatting.DARK_RED), true);
+            level.playSound(null, pos, AllSoundEvents.DENY.getMainEvent(), SoundSource.BLOCKS, 0.5f, 1.0f);
+
+            return ItemInteractionResult.CONSUME;
+        }
+
+        // Check isBound
+        if(!CardItem.isBound(item)){
+            player.displayClientMessage(Component.literal("Card is not bound").withStyle(ChatFormatting.DARK_RED), true);
+            level.playSound(null, pos, AllSoundEvents.DENY.getMainEvent(), SoundSource.BLOCKS, 0.5f, 1.0f);
+
+            return ItemInteractionResult.CONSUME;
+        }
+
+        var cardUUID = CardItem.get(item);
+        var account = Numismatics.BANK.getAccount(cardUUID);
+
+        var be = (SubscriptionDepositorBlockEntity)level.getBlockEntity(pos);
+
+        // Check if accountType is allowed
+        switch (be.getAllowedAccountType()){
+            case AllConstants.AccountType.BANK:
+
+                if(account.type != BankAccount.Type.BLAZE_BANKER){
+                    player.displayClientMessage(Component.literal("Only Banker cards allowed").withStyle(ChatFormatting.DARK_RED), true);
+                    level.playSound(null, pos, AllSoundEvents.DENY.getMainEvent(), SoundSource.BLOCKS, 0.5f, 1.0f);
+                }
+
+                return ItemInteractionResult.CONSUME;
+            case AllConstants.AccountType.PRIVATE:
+
+                if(account.type != BankAccount.Type.PLAYER){
+                    player.displayClientMessage(Component.literal("Only Personal cards allowed").withStyle(ChatFormatting.DARK_RED), true);
+                    level.playSound(null, pos, AllSoundEvents.DENY.getMainEvent(), SoundSource.BLOCKS, 0.5f, 1.0f);
+                }
+
+                return ItemInteractionResult.CONSUME;
+            default: break;
+        }
+
+        //TODO: Check blockstates
+        //TODO: Check if player is subscriber and wants to unsubscribe
+
+        // Check if player can afford
+        if(account.getBalance() < be.getTotalPrice()){
+            player.displayClientMessage(Component.translatable("gui.numismatics.vendor.insufficient_funds").withStyle(ChatFormatting.DARK_RED), true);
+            level.playSound(null, pos, AllSoundEvents.DENY.getMainEvent(), SoundSource.BLOCKS, 0.5f, 1.0f);
+
+            return ItemInteractionResult.CONSUME;
+        }
+
+        //TODO: Subscribe
+
+
+
         return ItemInteractionResult.CONSUME;
     }
 }
