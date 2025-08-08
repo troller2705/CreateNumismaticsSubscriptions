@@ -56,6 +56,7 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
 
     @Nullable
     protected UUID owner;
+    private boolean hasExtendedAccount;
 
     public SubscriptionDepositorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -107,6 +108,7 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
 
         var extAcc = getExtendedAccount();
         if(extAcc != null){
+            hasExtendedAccount = true;
             boolean shouldUpdate = false;
             shouldUpdate |= getInterval() != extAcc.getInterval() || getInterval() == 0;
             shouldUpdate |= !Objects.equals(getUnit(), extAcc.getUnit());
@@ -116,7 +118,20 @@ public class SubscriptionDepositorBlockEntity extends AbstractDepositorBlockEnti
 
             if(shouldUpdate)
                 notifyUpdate();
+        }else{
+            if(hasExtendedAccount){
+                hasExtendedAccount = false;
+                notifyUpdate();
+            }
         }
+    }
+
+    @Override
+    public void notifyUpdate() {
+        StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
+        NumismaticsSubscriptions.LOGGER.debug(String.format("[%s] notifyUpdate called from %s", level == null || level.isClientSide ? "CL" : "SV", caller.getMethodName()));
+
+        super.notifyUpdate();
     }
 
     public ExtendedAccountData getExtendedAccount(){

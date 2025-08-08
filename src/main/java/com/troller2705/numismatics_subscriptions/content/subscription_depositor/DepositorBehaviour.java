@@ -9,6 +9,7 @@ import com.troller2705.numismatics_subscriptions.content.backend.CoinPrice;
 import com.troller2705.numismatics_subscriptions.content.backend.ExtendedAccountData;
 import com.troller2705.numismatics_subscriptions.content.backend.SubscriptionBehavior;
 import dev.ithundxr.createnumismatics.content.backend.Coin;
+import net.createmod.catnip.platform.Env;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -55,41 +56,21 @@ public class DepositorBehaviour extends BlockEntityBehaviour implements Subscrip
     public void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
 
-        if(clientPacket){
-            var extAcc = getExtendedAccount();
-            if(extAcc == null){
-                tag.putInt("Interval", 0);
-                tag.putString("Unit", "");
-                tag.putString("AllowedAccountType", "");
-            }else{
-                tag.putInt("Interval", extAcc.getInterval());
-                tag.putString("Unit", extAcc.getUnit());
-                tag.putString("AllowedAccountType", extAcc.getAllowedAccountType());
-
-                extAcc.getCoinPrice().write(tag);
-
-                ListTag subscribersTag = new ListTag();
-                for (Map.Entry<UUID, Boolean> subscriber : extAcc.getSubscribers().entrySet()){
-                    CompoundTag subscriberTag = new CompoundTag();
-                    subscriberTag.putUUID("UUID", subscriber.getKey());
-                    subscriberTag.putBoolean("Valid", subscriber.getValue());
-                    subscribersTag.add(subscriberTag);
-                }
-
-                tag.put("Subscribers", subscribersTag);
-            }
+        if(Env.CLIENT.isCurrent()){
+            NumismaticsSubscriptions.LOGGER.debug(String.format("[CL] write(%b)", clientPacket));
         }else{
-            tag.putInt("Interval", interval);
-            if(unit == null) unit = AllConstants.Time.HOURS;
-            tag.putString("Unit", unit);
+            NumismaticsSubscriptions.LOGGER.debug(String.format("[SV] write(%b)", clientPacket));
+        }
 
-            if(allowedAccountType == null) allowedAccountType = AllConstants.AccountType.ALL;
-            tag.putString("AllowedAccountType", allowedAccountType);
+        if(Env.CLIENT.isCurrent()){
+            tag.putInt("Interval", getInterval());
+            tag.putString("Unit", getUnit());
+            tag.putString("AllowedAccountType", getAllowedAccountType());
 
-            coinPrice.write(tag);
+            this.coinPrice.write(tag);
 
             ListTag subscribersTag = new ListTag();
-            for (Map.Entry<UUID, Boolean> subscriber : subscribers.entrySet()){
+            for (Map.Entry<UUID, Boolean> subscriber : getSubscribers().entrySet()){
                 CompoundTag subscriberTag = new CompoundTag();
                 subscriberTag.putUUID("UUID", subscriber.getKey());
                 subscriberTag.putBoolean("Valid", subscriber.getValue());
@@ -97,26 +78,93 @@ public class DepositorBehaviour extends BlockEntityBehaviour implements Subscrip
             }
 
             tag.put("Subscribers", subscribersTag);
+            return;
         }
+
+        var extAcc = getExtendedAccount();
+        if(extAcc == null){
+            tag.putInt("Interval", 0);
+            tag.putString("Unit", "");
+            tag.putString("AllowedAccountType", "");
+            tag.remove("Prices");
+            tag.remove("Subscribers");
+            return;
+        }
+
+        setInterval(extAcc.getInterval());
+        tag.putInt("Interval", getInterval());
+        setUnit(extAcc.getUnit());
+        tag.putString("Unit", getUnit());
+        setAllowedAccountType(extAcc.getAllowedAccountType());
+        tag.putString("AllowedAccountType", getAllowedAccountType());
+
+        var coinPriceTemp = new CompoundTag();
+        extAcc.getCoinPrice().write(coinPriceTemp);
+        this.coinPrice.read(coinPriceTemp);
+        coinPrice.write(tag);
+
+        this.subscribers.clear();
+        this.subscribers.putAll(extAcc.getSubscribers());
+
+        ListTag subscribersTag = new ListTag();
+        for (Map.Entry<UUID, Boolean> subscriber : getSubscribers().entrySet()){
+            CompoundTag subscriberTag = new CompoundTag();
+            subscriberTag.putUUID("UUID", subscriber.getKey());
+            subscriberTag.putBoolean("Valid", subscriber.getValue());
+            subscribersTag.add(subscriberTag);
+        }
+
+        tag.put("Subscribers", subscribersTag);
     }
 
     @Override
     public void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
 
-        setInterval(tag.getInt("Interval"));
-        setUnit(tag.getString("Unit"));
-        setAllowedAccountType(tag.getString("AllowedAccountType"));
+        if(Env.CLIENT.isCurrent()){
+            NumismaticsSubscriptions.LOGGER.debug(String.format("[CL] read(%b)", clientPacket));
+        }else{
+            NumismaticsSubscriptions.LOGGER.debug(String.format("[SV] read(%b)", clientPacket));
+        }
 
-        this.coinPrice.read(tag);
+        if(Env.CLIENT.isCurrent()){
+            setInterval(tag.getInt("Interval"));
+            setUnit(tag.getString("Unit"));
+            setAllowedAccountType(tag.getString("AllowedAccountType"));
 
-        if(tag.contains("Subscribers")){
-            subscribers.clear();
-            var subscribersTag = tag.getList("Subscribers", Tag.TAG_COMPOUND);
+            this.coinPrice.read(tag);
 
-            for (int i = 0, l = subscribersTag.size(); i < l; i++) {
-                CompoundTag subscriberTag = subscribersTag.getCompound(i);
-                subscribers.put(subscriberTag.getUUID("UUID"), subscriberTag.getBoolean("Valid"));
+            if(tag.contains("Subscribers")){
+                subscribers.clear();
+                var subscribersTag = tag.getList("Subscribers", Tag.TAG_COMPOUND);
+
+                for (int i = 0, l = subscribersTag.size(); i < l; i++) {
+                    CompoundTag subscriberTag = subscribersTag.getCompound(i);
+                    subscribers.put(subscriberTag.getUUID("UUID"), subscriberTag.getBoolean("Valid"));
+                }
+            }
+        }else{
+            var extAcc = getExtendedAccount();
+
+            if(extAcc == null){
+                setInterval(0);
+                setUnit("");
+                setAllowedAccountType("");
+                this.coinPrice.reset();
+                this.subscribers.clear();
+                return;
+            }
+
+            setInterval(extAcc.getInterval());
+            setUnit(extAcc.getUnit());
+            setAllowedAccountType(extAcc.getAllowedAccountType());
+
+            for (Coin coin : Coin.values()){
+                setPrice(coin, extAcc.getCoinPrice().getPrice(coin));
+            }
+
+            for (Map.Entry<UUID, Boolean> sub : extAcc.getSubscribers().entrySet()){
+                setSubscriber(sub.getKey(), sub.getValue());
             }
         }
     }
