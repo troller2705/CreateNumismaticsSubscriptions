@@ -151,10 +151,13 @@ public class SubscriptionDepositorBlock extends AbstractDepositorBlock<Subscript
             return ItemInteractionResult.CONSUME;
         }
 
-        account.deduct(be.getTotalPrice());
-        ownerAccount.setBalance(ownerAccount.getBalance() + be.getTotalPrice());
+        if (account.deduct(be.getTotalPrice()))
+        {
+            ownerAccount.deposit(be.getTotalPrice());
+        }
 
-        be.addSubscriber(player.getUUID());
+
+        be.addSubscriber(account.id);
 
         player.displayClientMessage(Component.literal("You have subscribed!").withStyle(ChatFormatting.GREEN), true);
         level.playSound(null, pos, AllSoundEvents.CONFIRM.getMainEvent(), SoundSource.BLOCKS, 0.5f, 1.0f);
