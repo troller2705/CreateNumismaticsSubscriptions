@@ -123,8 +123,18 @@ public class SubscriptionDepositorBlock extends AbstractDepositorBlock<Subscript
             default: break;
         }
 
-        //TODO: Check blockstates
-        //TODO: Check if player is subscriber and wants to unsubscribe
+        if (be.getTotalPrice() <= 0) {
+            player.displayClientMessage(Component.literal("This subscription depositor is not configured yet.").withStyle(ChatFormatting.DARK_RED), true);
+            level.playSound(null, pos, AllSoundEvents.DENY.getMainEvent(), SoundSource.BLOCKS, 0.5f, 1.0f);
+            return ItemInteractionResult.CONSUME;
+        }
+
+        if (be.getSubscribers().containsKey(player.getUUID())) {
+            be.removeSubscriber(player.getUUID());
+            player.displayClientMessage(Component.literal("You have unsubscribed.").withStyle(ChatFormatting.GREEN), true);
+            level.playSound(null, pos, AllSoundEvents.CONFIRM.getMainEvent(), SoundSource.BLOCKS, 0.5f, 1.0f);
+            return ItemInteractionResult.CONSUME;
+        }
 
         // Check if player can afford
         if(account.getBalance() < be.getTotalPrice()){
@@ -134,8 +144,20 @@ public class SubscriptionDepositorBlock extends AbstractDepositorBlock<Subscript
             return ItemInteractionResult.CONSUME;
         }
 
-        //TODO: Subscribe
+        var ownerAccount = Numismatics.BANK.getAccount(be.getCardId());
+        if (ownerAccount == null) {
+            player.displayClientMessage(Component.literal("Owner account not found!").withStyle(ChatFormatting.DARK_RED), true);
+            level.playSound(null, pos, AllSoundEvents.DENY.getMainEvent(), SoundSource.BLOCKS, 0.5f, 1.0f);
+            return ItemInteractionResult.CONSUME;
+        }
 
+        account.deduct(be.getTotalPrice());
+        ownerAccount.setBalance(ownerAccount.getBalance() + be.getTotalPrice());
+
+        be.addSubscriber(player.getUUID());
+
+        player.displayClientMessage(Component.literal("You have subscribed!").withStyle(ChatFormatting.GREEN), true);
+        level.playSound(null, pos, AllSoundEvents.CONFIRM.getMainEvent(), SoundSource.BLOCKS, 0.5f, 1.0f);
 
 
         return ItemInteractionResult.CONSUME;
