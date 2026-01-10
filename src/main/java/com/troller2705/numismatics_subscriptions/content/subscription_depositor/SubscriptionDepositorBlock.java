@@ -19,12 +19,10 @@
 package com.troller2705.numismatics_subscriptions.content.subscription_depositor;
 
 import com.simibubi.create.AllSoundEvents;
-import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.troller2705.numismatics_subscriptions.AllBlockEntities;
 import com.troller2705.numismatics_subscriptions.AllConstants;
 import dev.ithundxr.createnumismatics.Numismatics;
 import dev.ithundxr.createnumismatics.content.backend.BankAccount;
-import dev.ithundxr.createnumismatics.content.backend.behaviours.SliderStylePriceBehaviour;
 import dev.ithundxr.createnumismatics.content.bank.CardItem;
 import dev.ithundxr.createnumismatics.content.depositor.AbstractDepositorBlock;
 import dev.ithundxr.createnumismatics.util.Utils;
@@ -34,15 +32,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class SubscriptionDepositorBlock extends AbstractDepositorBlock<SubscriptionDepositorBlockEntity>
 {
@@ -61,7 +60,7 @@ public class SubscriptionDepositorBlock extends AbstractDepositorBlock<Subscript
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, BlockHitResult hitResult) {
         if (hitResult.getDirection().getAxis().isVertical()) {
             if (level.isClientSide)
                 return ItemInteractionResult.SUCCESS;
@@ -81,7 +80,7 @@ public class SubscriptionDepositorBlock extends AbstractDepositorBlock<Subscript
         var item = player.getItemInHand(hand);
 
         // Check is CardItem
-        if(item == null || item.isEmpty() || !(item.getItem() instanceof CardItem)){
+        if(item.isEmpty() || !(item.getItem() instanceof CardItem)){
 
             player.displayClientMessage(Component.literal("Need to use a card").withStyle(ChatFormatting.DARK_RED), true);
             level.playSound(null, pos, AllSoundEvents.DENY.getMainEvent(), SoundSource.BLOCKS, 0.5f, 1.0f);
@@ -103,9 +102,10 @@ public class SubscriptionDepositorBlock extends AbstractDepositorBlock<Subscript
         var be = (SubscriptionDepositorBlockEntity)level.getBlockEntity(pos);
 
         // Check if accountType is allowed
-        switch (be.getAllowedAccountType()){
+        switch (Objects.requireNonNull(be).getAllowedAccountType()){
             case AllConstants.AccountType.BANK:
 
+                assert account != null;
                 if(account.type != BankAccount.Type.BLAZE_BANKER){
                     player.displayClientMessage(Component.literal("Only Banker cards allowed").withStyle(ChatFormatting.DARK_RED), true);
                     level.playSound(null, pos, AllSoundEvents.DENY.getMainEvent(), SoundSource.BLOCKS, 0.5f, 1.0f);
@@ -114,6 +114,7 @@ public class SubscriptionDepositorBlock extends AbstractDepositorBlock<Subscript
                 return ItemInteractionResult.CONSUME;
             case AllConstants.AccountType.PRIVATE:
 
+                assert account != null;
                 if(account.type != BankAccount.Type.PLAYER){
                     player.displayClientMessage(Component.literal("Only Personal cards allowed").withStyle(ChatFormatting.DARK_RED), true);
                     level.playSound(null, pos, AllSoundEvents.DENY.getMainEvent(), SoundSource.BLOCKS, 0.5f, 1.0f);
@@ -137,6 +138,7 @@ public class SubscriptionDepositorBlock extends AbstractDepositorBlock<Subscript
         }
 
         // Check if player can afford
+        assert account != null;
         if(account.getBalance() < be.getTotalPrice()){
             player.displayClientMessage(Component.translatable("gui.numismatics.vendor.insufficient_funds").withStyle(ChatFormatting.DARK_RED), true);
             level.playSound(null, pos, AllSoundEvents.DENY.getMainEvent(), SoundSource.BLOCKS, 0.5f, 1.0f);
